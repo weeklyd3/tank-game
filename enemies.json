@@ -1,0 +1,24 @@
+{
+    "basic": {
+        "health": 100,
+        "width": 50,
+        "height": 62.5,
+        "cooldown": 1000,
+        "size": [15],
+        "damage": [35],
+        "sameRand": true,
+        "spread": 0,
+        "special": "none"
+    },
+    "machine": {
+        "health": 200,
+        "width": 50,
+        "height": 62.5,
+        "cooldown": 100,
+        "size": [10, 15, 20],
+        "damage": [5, 10, 15],
+        "sameRand": true,
+        "spread": 4,
+        "special": "none"
+    }
+}

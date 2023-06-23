@@ -1,0 +1,14 @@
+{
+    "name": "The mountain",
+    "levels": 10,
+    "background": "#8f8a8a",
+    "level1": {
+        "length": 10000,
+        "enemies": {
+            
+        },
+        "aesthetics": {
+            
+        }
+    }
+}

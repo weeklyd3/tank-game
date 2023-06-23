@@ -1,0 +1,84 @@
+{
+    "Info1": "This is here because there are no comments in json.",
+    "Info2": "Cooldown: ms until you can shoot again; damage: list of possible damages per bullet (rng);",
+    "Info3": "size: list of possible bullet sizes (rng); sameRand: guarantees same number for damage, speed, and size;",
+    "Info4": "spread: bullet can go left or right that amount of degrees from where you aimed it;",
+    "Info5": "speed: list of possible bullet speeds (rng); specials: notes to developer about gun; price: price to buy gun",
+    "Info6": "bulletPrice: price to buy 1 bullet for gun. player can decide how many bullets they buy per purchase"
+    "Info6": "damage = cbrt(damageLevel)*damage, speed = sqrt(sqrt((speedLevel))*speed, cooldown = cooldown/sqrt(sqrt(sqrt((cooldownLevel)))), max level = 50 for all stats",
+    "basic": {
+        "cooldown": 1000,
+        "damage": [50],
+        "size": [25],
+        "sameRand": true,
+        "spread": 2,
+        "range": [800],
+        "recoil": 3
+    }
+    "machine gun": {
+        "cooldown": 125,
+        "damage": [10, 15, 20],
+        "size": [15, 22.5, 30],
+        "speed": [4, 4, 4],
+        "sameRand": true,
+        "spread": 10,
+        "price": 5000,
+        "bulletPrice": 3,
+        "recoil": 2,
+        "maxAmmo": 100,
+        "range": [1000, 1000, 1000],
+        "specials": "very fast"
+    },
+    "destroyer": {
+        "cooldown": 3000,
+        "damage": [300],
+        "size": [40],
+        "speed": [5],
+        "sameRand": true,
+        "spread": 2,
+        "price": 10000,
+        "bulletPrice": 50,
+        "recoil": 7,
+        "range": [1000],
+        "specials": "very high damage"
+    },
+    "shotgun": {
+        "cooldown": 2000,
+        "damage": [16, 22],
+        "size": [20, 30],
+        "speed": [5, 5],
+        "sameRand": true,
+        "spread": 0,
+        "recoil": 4,
+        "price": 100000,
+        "bulletPrice": 1000,
+        "range": [400, 400],
+        "specials": "11 guns, middle one at 0° and 5 spreading left and 5 spreading right at 2° intervals. middle one has size and damage index 1, and everything else has damage and size index 0"
+    },
+    "pulsar": {
+        "cooldown": 3600,
+        "damage": [30],
+        "size": [20],
+        "speed": [2],
+        "sameRand": true,
+        "spread": 0,
+        "recoil": 8,
+        "price": 100000,
+        "bulletPrice": 1000,
+        "range": [1000],
+        "specials": "12 bullets, same stats except that the first bullet has speed 2 each bullet after that has speed +1 (increment doesn't change after upgrade)"
+    },
+    "grenade launcher": {
+        "cooldown": 4000,
+        "damage": [432, 36],
+        "size": [45, 10],
+        "speed": [4, 8],
+        "sameRand": true,
+        "spread": 0,
+        "price": 200000,
+        "bulletPrice": 1500,
+        "recoil": 6,
+        "range": [600, 200],
+        "specials":"Big bullet that divides ceil(hp/36) shards after range"
+    }
+}
