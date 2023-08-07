@@ -108,7 +108,7 @@ function initEnemy(type, en, add = true) {
 }
 function createEnemy(type, options) {
 	var opt = {"x": 0, "y": 0, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "angle": 0, "lim":[200, 800], "type": type};
-	for (const o of Object.keys(options)) opt[o] = options[o];
+	for (const o in options) opt[o] = options[o];
 	return opt;
 }
 function createAndInitEnemy(type, options) {
@@ -928,7 +928,7 @@ var s = function(sketch) {
 			for (const a of levelInfo.aesthetics[k]) a['type'] = k;
 		}
 		if (new URL(location.href).searchParams.get('hard')) {
-			for (const e of levelInfo.allEnemies) {
+			for (const e of Object.keys(levelInfo.allEnemies)) {
 				if (e.type !== 'machine') e.type = 'machine';
 			}
 		}
@@ -945,12 +945,12 @@ var s = function(sketch) {
 		});
 		levelInfo.__defineGetter__('allEnemies', () => {
 			const a = [];
-			for (const k of Object.keys(levelInfo.enemies)) a.push(...levelInfo.enemies[k]);
+			for (const k in levelInfo.enemies) a.push(...levelInfo.enemies[k]);
 			return a;
 		})
 		levelInfo.__defineGetter__('allAesthetics', () => {
 			const a = [];
-			for (const k of Object.keys(levelInfo.aesthetics)) a.push(...levelInfo.aesthetics[k]);
+			for (const k in levelInfo.aesthetics) a.push(...levelInfo.aesthetics[k]);
 			return a;
 		});
 		weapons = await getJSONResource('weapons.json');
