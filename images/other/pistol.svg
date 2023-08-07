@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="300"
+   height="180"
+   viewBox="0 0 79.374998 47.625"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="gun_badlydrawnpistol.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="1.3380612"
+     inkscape:cx="88.934647"
+     inkscape:cy="16.068024"
+     inkscape:window-width="1920"
+     inkscape:window-height="995"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-2.9207653,-34.723682)">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2.01873;stroke-linejoin:bevel;stroke-dasharray:none"
+       id="path400"
+       cx="32.504856"
+       cy="51.487965"
+       rx="14.742236"
+       ry="9.5585365" />
+    <path
+       id="rect1729"
+       style="fill:none;stroke:#000000;stroke-width:2.0877;stroke-linejoin:bevel"
+       d="m 34.085073,49.63831 h 0.137072 c -5.661167,4.38156 -2.068418,7.713503 0,11.1514 h -0.137072 c -1.455726,-3.50237 -5.985506,-6.930838 0,-11.1514 z"
+       sodipodi:nodetypes="ccccc" />
+    <rect
+       style="fill:#b3b3b3;stroke:#000000;stroke-width:0;stroke-linejoin:bevel;stroke-dasharray:none"
+       id="rect2509"
+       width="51.634178"
+       height="3.3772569"
+       x="24.071465"
+       y="49.068886" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linejoin:bevel"
+       id="rect234"
+       width="75.07518"
+       height="16.669415"
+       x="12.512245"
+       y="34.723682" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:0;stroke-linejoin:bevel"
+       id="rect290"
+       width="11.49895"
+       height="35.175011"
+       x="30.481762"
+       y="40.52523"
+       transform="matrix(0.96238059,0.27170497,-0.34893271,0.93714778,0,0)" />
+  </g>
+</svg>

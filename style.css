@@ -6,11 +6,66 @@ html {
     user-select: none;
     color: rgb(189, 255, 200)
 }
-button {
+button:not(.nostylebutton) {
     cursor: pointer;
     display: inline-block;
     background: none;
     border: 3px solid cyan;
     font-family: Futura, sans-serif;
     color: rgb(189, 255, 200)
+}
+.nostylebutton:not(.actualnostyle) {
+	padding: 0;
+	background-color: transparent;
+	margin: 0;
+	border: none;
+}
+.debug-info-list > * {
+	color: black;
+}
+.debug-info-list {
+	text-align: left;
+	font-family: monospace;
+	user-select: text;
+}
+.debug-info-objectlist {
+	list-style-type: none;
+	padding-left: 15px;
+}
+.debug-null {
+	color: gray;
+}
+.debug-string {
+	color: red;
+}
+.debug-function {
+	color: blue;
+}
+.debug-number {
+	color: green;
+}
+.debug-info-objectlist::before {
+	display: block;
+	content: "Object: {";
+	margin-left: -15px;
+}
+.debug-info-objectlist::after {
+	display: block;
+	content: "}";
+	margin-left: -15px;
+}
+.debug-info-array::before {
+	display: block;
+	content: "Array: [";
+	margin-left: -15px;
+}
+.debug-info-array::after {
+	display: block;
+	content: "]";
+	margin-left: -15px;
+}
+.error-dialog {
+	border: 1px solid;
+	padding: 5px;
+	user-select: text;
 }

@@ -3,12 +3,258 @@
     "levels": 10,
     "background": "#8f8a8a",
     "level1": {
-        "length": 10000,
+        "length": 4000,
         "enemies": {
-            
+            "basic": [{"x": 2500, "y": 500, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 3, "angle": 0, "lim":[200, 800], "id": "basic1"},{"x": 3600, "y": 450, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 3, "angle": 0, "lim":[200, 800]}],
+            "machine": [
+            ],
+            "wall": [{"x": 1200, "y": 575, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 3, "angle": 0, "lim":[200, 800], "health": 100, "originalHealth":100},{"x": 3500, "y": 450, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 3, "angle": 0, "lim":[200, 800], "health": 100, "originalHealth":100}]
         },
         "aesthetics": {
-            
+            "rect": [
+
+            ],
+            "circle": [
+                
+            ],
+            "img": [
+                
+            ],
+            "line": [
+                
+            ],
+            "text":[
+                [500, 450, "Move left and kill all enemies", "black", 50],
+                [1250, 500, "Kill that enemy!", "black", 50],
+                [2550, 425, "Now it shoots. Don't die!", "black", 50],
+				[3500, 300, "He's trying to protect himself\nbut only from one side!", "black", 50]
+            ]
         }
+    },
+	"level-1": {
+		"length": 10000,
+		"aesthetics": [],
+		"enemies": {
+			"basic": [],
+			"machine": [{"x":0,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":0,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":0,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":0,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":250,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":250,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":250,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":250,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":500,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":500,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":500,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":500,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":750,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":750,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":750,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":750,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1000,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1000,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1000,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1000,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1250,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1250,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1250,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1250,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1500,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1500,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1500,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1500,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1750,"y":0,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1750,"y":250,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1750,"y":500,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]},{"x":1750,"y":750,"motile":false,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":3,"angle":0,"lim":[200,800]}]
+		}
+	},
+	"level0": {
+		"length": 5300,
+		"aesthetics": [],
+		"enemies": {
+			"basic": [
+				{"x": 200, "y": 0, "motile": true, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3},
+				{"x": 300, "y": 50, "motile": true, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3},
+				{"x": 400, "y": 100, "motile": true, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3},
+				{"x": 500, "y": 150, "motile": true, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3},
+				{"x": 600, "y": 200, "motile": true, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3},
+				{"x": 700, "y": 250, "motile": true, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3},
+    {
+        "x": 1200,
+        "y": 0,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 1300,
+        "y": 50,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 1400,
+        "y": 100,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 1500,
+        "y": 150,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 1600,
+        "y": 200,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 1700,
+        "y": 250,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },{"x":2800,"y":50,"motile":true,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":15,"lim":[0,780]},{"x":2900,"y":100,"motile":true,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":15,"lim":[0,780]},{"x":3000,"y":150,"motile":true,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":15,"lim":[0,780]},{"x":3100,"y":200,"motile":true,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":15,"lim":[0,780]},{"x":3200,"y":250,"motile":true,"sizeX":100,"sizeY":120,"frames":0,"killable":true,"speed":15,"lim":[0,780]},
+				{"x": 3500, "y": 200, "motile": true, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [200, 400]},
+				{"x": 3500, "y": 500, "motile": true, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+    {
+        "x": 4200,
+        "y": 0,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 4300,
+        "y": 50,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 4400,
+        "y": 100,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 4500,
+        "y": 150,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 4600,
+        "y": 200,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
+    },
+    {
+        "x": 4700,
+        "y": 250,
+        "motile": true,
+        "sizeX": 100,
+        "sizeY": 120,
+        "frames": 0,
+        "killable": true,
+        "speed": 10,
+        "lim": [
+            0,
+            780
+        ]
     }
+			],
+			"wall": [
+				{"x": 3750, "y": 0, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 100, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 200, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 300, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 400, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 500, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 600, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 700, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 3750, "y": 800, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 20, "lim": [500, 700]},
+				{"x": 5000, "y": 270, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 4900, "y": 270, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 5100, "y": 270, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 4900, "y": 390, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 5100, "y": 390, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 5000, "y": 510, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 4900, "y": 510, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0},
+				{"x": 5100, "y": 510, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0}
+			],
+			"machine": [
+				{"x": 5000, "y": 390, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}
+			]
+		}
+	},
+	"level-2": {
+		"length": 900,
+		"aesthetics": [],
+		"enemies": {
+			"basic": [
+				{"x": 0, "y": 0, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 300, "y": 390, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 600, "y": 500, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}
+			],
+			"machine": []
+		}
+	}
 }

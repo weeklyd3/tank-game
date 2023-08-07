@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="200"
-   height="250"
-   viewBox="0 0 52.916664 66.145834"
+   width="160"
+   height="200"
+   viewBox="0 0 42.333331 52.916667"
    version="1.1"
    id="svg5"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
-   sodipodi:docname="enemy_basictank_outside.svg"
+   sodipodi:docname="enemy_basictank_notreads.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -25,8 +25,8 @@
      inkscape:document-units="px"
      showgrid="false"
      inkscape:zoom="1.651128"
-     inkscape:cx="283.4426"
-     inkscape:cy="134.75636"
+     inkscape:cx="263.45626"
+     inkscape:cy="120.22084"
      inkscape:window-width="1920"
      inkscape:window-height="995"
      inkscape:window-x="0"
@@ -38,154 +38,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
-    <rect
-       style="fill:#808080;stroke-width:1.13954;stroke-linejoin:bevel"
-       id="rect396"
-       width="13.229166"
-       height="66.145828"
-       x="0"
-       y="1.7763568e-15" />
-    <rect
-       style="fill:#808080;stroke-width:1.13954;stroke-linejoin:bevel"
-       id="rect396-3"
-       width="13.229166"
-       height="66.145828"
-       x="39.6875"
-       y="0" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6"
-       width="62.451271"
-       height="2.0850129"
-       x="-1.7700199"
-       y="13.606666" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-7"
-       width="62.451271"
-       height="2.0850129"
-       x="-2.5753777"
-       y="9.5749016" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-5"
-       width="62.451271"
-       height="2.0850129"
-       x="-2.6740386"
-       y="17.935772" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-3"
-       width="62.451271"
-       height="2.0850129"
-       x="-2.9270279"
-       y="22.361052" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-56"
-       width="62.451271"
-       height="2.0850129"
-       x="-3.7298963"
-       y="26.674089" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-2"
-       width="62.451271"
-       height="2.0850129"
-       x="-5.9244337"
-       y="30.874891" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-9"
-       width="62.451271"
-       height="2.0850129"
-       x="-4.0915036"
-       y="35.564472" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-1"
-       width="62.451271"
-       height="2.0850129"
-       x="-5.7904687"
-       y="39.691051" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-27"
-       width="62.451271"
-       height="2.0850129"
-       x="-4.6997647"
-       y="43.690002" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-0"
-       width="62.451271"
-       height="2.0850129"
-       x="-6.217248"
-       y="47.928818" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-93"
-       width="62.451271"
-       height="2.0850129"
-       x="-5.5438156"
-       y="52.711182" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-6"
-       width="62.451271"
-       height="2.0850129"
-       x="-49.10461"
-       y="56.843189" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-06"
-       width="62.451271"
-       height="2.0850129"
-       x="39.511379"
-       y="56.362556" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-6-2"
-       width="62.451271"
-       height="2.0850129"
-       x="-49.08334"
-       y="60.891926" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-06-6"
-       width="62.451271"
-       height="2.0850129"
-       x="39.532654"
-       y="60.411293" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-6-1"
-       width="62.451271"
-       height="2.0850129"
-       x="-49.089901"
-       y="1.6023421" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-06-8"
-       width="62.451271"
-       height="2.0850129"
-       x="39.526085"
-       y="1.1217093" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-6-2-7"
-       width="62.451271"
-       height="2.0850129"
-       x="-49.06863"
-       y="5.6510749" />
-    <rect
-       style="fill:#000000;stroke-width:0.653648;stroke-linejoin:bevel"
-       id="rect487-6-06-6-9"
-       width="62.451271"
-       height="2.0850129"
-       x="39.547359"
-       y="5.1704459" />
+     id="layer1"
+     transform="translate(-5.2916665,-3.96875)">
     <rect
        style="fill:#ff7f2a;stroke-width:0.745464;stroke-linejoin:bevel"
        id="rect234"

@@ -10,14 +10,28 @@
 
 <body>
     <div id='top' style="text-align: center;"><h1>Main page</h1>Money: <span id='money'></span></div>
+  <center> 
+  <p>Note: if the game is not working, try clearing your cache, going to the start page, and clicking the play button. This should fix the problem.</p>
+  <center>
+	<center>
+    <br><br><br><br><br><br><br><br>
+<button style="padding: 10px 20px 10px 20px; font-size: 50px; border-radius: 10px;" onclick="window.location.href='intro.html';">INTRO</button>
+  </center>
     <script src="jsonloader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js"
 		integrity="sha512-4P0ZJ49OMXe3jXT+EsEaq82eNwFeyYL81LeHGzGcEhowFbTqeQ80q+NEkgsE8tHPs6aCqvi7U+XWliAjDmT5Lg=="
 		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="script.js"></script>
+	  <p>for testing purposes (REMOVE THIS LATER):</p>
+	  <form action="javascript:;" onsubmit="changelevel(document.querySelector('#level').value);"><label>level: <input id="level" /></label> <input type="submit" value="cheat" /></form>
     <script>
         document.getElementById("money").innerHTML = localStorage.money;
         console.log(getJSONResource("stage1.json"));
+		function changelevel(level) {
+			var gameIn = JSON.parse(localStorage.gameIn);
+			gameIn[1] = level;
+			localStorage.gameIn = JSON.stringify(gameIn);
+		}
     </script>
 </body>
 

@@ -4,21 +4,45 @@
         "width": 50,
         "height": 62.5,
         "cooldown": 1000,
-        "size": [15],
-        "damage": [35],
+        "size": [30],
+        "damage": [30],
+        "speed": 7,
+        "range": 800,
         "sameRand": true,
         "spread": 0,
-        "special": "none"
+        "special": "none",
+        "money": [2, 5],
+        "homing": false
     },
     "machine": {
         "health": 200,
         "width": 50,
         "height": 62.5,
-        "cooldown": 100,
-        "size": [10, 15, 20],
-        "damage": [5, 10, 15],
+        "cooldown": 150,
+        "speed": 7,
+        "size": [20, 30, 40],
+        "damage": [10, 15, 20],
         "sameRand": true,
-        "spread": 4,
-        "special": "none"
+        "spread": 10,
+        "range": 800,
+        "special": "none",
+		"money": [4, 10],
+        "homing": false
+    },
+    "wall":{
+        "health": 200,
+        "width": 50,
+        "height": 62.5,
+        "cooldown": 1000000000,
+        "speed": 0,
+        "size": [0, 0, 0],
+        "damage": [0, 0, 0],
+        "sameRand": true,
+        "spread": 0,
+        "range": 0,
+        "special": "none",
+		"money": [1, 3],
+        "homing": false,
+		"noCannon": true
     }
 }

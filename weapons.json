@@ -4,17 +4,30 @@
     "Info3": "size: list of possible bullet sizes (rng); sameRand: guarantees same number for damage, speed, and size;",
     "Info4": "spread: bullet can go left or right that amount of degrees from where you aimed it;",
     "Info5": "speed: list of possible bullet speeds (rng); specials: notes to developer about gun; price: price to buy gun",
-    "Info6": "bulletPrice: price to buy 1 bullet for gun. player can decide how many bullets they buy per purchase"
+    "Info6": "bulletPrice: price to buy 1 bullet for gun. player can decide how many bullets they buy per purchase",
     "Info6": "damage = cbrt(damageLevel)*damage, speed = sqrt(sqrt((speedLevel))*speed, cooldown = cooldown/sqrt(sqrt(sqrt((cooldownLevel)))), max level = 50 for all stats",
     "basic": {
         "cooldown": 1000,
         "damage": [50],
         "size": [25],
+        "speed": [4],
         "sameRand": true,
         "spread": 2,
         "range": [800],
-        "recoil": 3
-    }
+        "recoil": 3,
+        "image": "images/other/pistol.svg"
+    },
+    "basic": {
+        "cooldown": 1000,
+        "damage": [50],
+        "size": [25],
+        "speed": [4],
+        "sameRand": true,
+        "spread": 2,
+        "range": [800],
+        "recoil": 3,
+        "image": "images/other/pistol.svg"
+    },
     "machine gun": {
         "cooldown": 125,
         "damage": [10, 15, 20],
