@@ -1,6 +1,9 @@
-function addSpecial(forwhat, callback) {
+function addSpecial(forwhat, callback, once = false) {
 	if (typeof level == 'undefined') throwUnderTheBus('no level found');
-	if (level == forwhat) updateCallbacks.push(callback);
+	if (level == forwhat) {
+		if (once) callback();
+		else updateCallbacks.push(callback);
+	}
 }
 addSpecial('-2', function() {
 	levelInfo.length += 0.04;
@@ -53,4 +56,46 @@ addSpecial('-2', function() {
 		})
 	}
 	window.sinceLastExpansion++;
+})
+addSpecial('2', function() {
+	if (window.allDead == undefined) allDead = false;
+	if (window.twoSpawned == undefined) twoSpawned = false;
+	if (!window.oneframe) {
+		oneframe = true;
+		return;
+	}
+	if (!twoSpawned) {
+		if (x > 3000) {
+			twoSpawned = true;
+			levelInfo.getEnemyById('rndspawn1').y = 100;
+			levelInfo.getEnemyById('rndspawn2').y = 700;
+			cutsceneAPI.spawnExplosion(3550, 160, 100, 60, [255, 0, 0]);
+			cutsceneAPI.spawnExplosion(3550, 760, 100, 60, [255, 0, 0]);
+		}
+	}
+	if (!allDead) {
+		allDead = true;
+		var firstTextAesthetic = levelInfo.aesthetics.text[0];
+		for (const e of levelInfo.allEnemies) {
+			if (e.health == undefined) return;
+			if (e.x > 300) continue;
+			if (e.health >= 0) {
+				allDead = false;
+				break;
+			}
+		}
+		if (!allDead) return;
+		cutsceneAPI.cutscene([async () => {
+			await cutsceneAPI.wait(250);
+			firstTextAesthetic[2] = "You are entering an enemy base. Good luck!";
+			await cutsceneAPI.wait(500);
+			levelInfo.aesthetics.barrier.splice(0, 1);
+			await cutsceneAPI.wait(500);
+		}], () => {
+			x = 865;
+			y = 450;
+		}, () => 1, {
+			fadeoutEnd: false
+		});
+	}
 })

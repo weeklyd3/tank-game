@@ -256,5 +256,42 @@
 			],
 			"machine": []
 		}
+	},
+	"level2": {
+		"length": 4500,
+		"aesthetics": {
+			"text": [
+				[1500, 450, "Defeat all enemies on the left!", "white", 50]
+			],
+			"barrier": [
+				[1000, 350, 100, 200, "chocolate", 1],
+				[1000, 0, 1000, 350, "chocolate", 1],
+				[1000, 550, 2000, 350, "chocolate", 1],
+				[2500, 0, 500, 350, "chocolate", 1],
+				[4100, 0, 400, 350, "chocolate", 1],
+				[4100, 550, 400, 350, "chocolate", 1]
+			]
+		},
+		"enemies": {
+			"basic": [
+				{"x": 200, "y": 660, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 2200, "y": 115, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 3500, "y": -2000, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "id": "rndspawn1"},
+				{"x": 3500, "y": -2000, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "id": "rndspawn2"}
+			],
+			"wall": [
+				{"x": 100, "y": 0, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 100, "y": 120, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 100, "y": 240, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 100, "y": 780, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 100, "y": 660, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 100, "y": 540, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 200, "y": 540, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 300, "y": 780, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 300, "y": 660, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 300, "y": 540, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "health": 50, "originalHealth": 50},
+				{"x": 1200, "y": 390, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "money": [100, 110], "killable": true, "speed": 10, "health": 5, "originalHealth": 5, "id": "wall1"}
+			]
+		}
 	}
 }
