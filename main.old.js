@@ -10,7 +10,11 @@ var tips = [
     "Don't always shoot, sometimes it's better to save your ammo",
     "You can't pause the game because it can be exploited to cheat",
     "Make sure you collect all the coins before you kill the last enemy",
-    "You still earn your coins if you die"
+    "You still earn your coins if you die",
+    "Press space to skip cutscenes",
+    "Move right and kill all enemies to win",
+    "Win a level to unlock the next one",
+    "Use coins to buy upgrades from the shop"
 ];
 var gameStarted = false;
 var width = 2000;
@@ -90,8 +94,10 @@ function getEnemyById(id, ...types) {
 	return null;
 }
 function getAestheticById(id) {
-	for (const a of levelInfo.aesthetics) {
-		if (a.id === id) return a;
+	for (const k in levelInfo.aesthetics) {
+		for (const a of levelInfo.aesthetics[k]) {
+			if (a.id === id) return a;
+		}
 	}
 	return null;
 }
@@ -171,7 +177,7 @@ var paused = false;
 var frozen = false; // new: keeps updating, but stops physics
 var prevPause = false;
 var mouseX, mouseY;
-var spd = 5;
+var spd = 20;
 var selected = 1;
 var firing = false;
 var gunSize;
@@ -195,7 +201,7 @@ var prizeCollected = false;
 var kills = 0;
 var dead = false;
 var stageDone = false;
-var immortal = false;
+var immortal = true;
 var firstDone = false;
 
 customStatus = null;

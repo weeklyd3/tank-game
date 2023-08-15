@@ -10,7 +10,12 @@ var tips = [
     "Don't always shoot, sometimes it's better to save your ammo",
     "You can't pause the game because it can be exploited to cheat",
     "Make sure you collect all the coins before you kill the last enemy",
-    "You still earn your coins if you die"
+    "You still earn your coins if you die",
+    "Press space to skip cutscenes",
+    "Move right and kill all enemies to win",
+    "Win a level to unlock the next one",
+    "Use coins to buy upgrades from the shop",
+	"Send feedback by pressing F after the level"
 ];
 var gameStarted = false;
 var width = 2000;
@@ -90,8 +95,10 @@ function getEnemyById(id, ...types) {
 	return null;
 }
 function getAestheticById(id) {
-	for (const a of levelInfo.aesthetics) {
-		if (a.id === id) return a;
+	for (const k in levelInfo.aesthetics) {
+		for (const a of levelInfo.aesthetics[k]) {
+			if (a.id === id) return a;
+		}
 	}
 	return null;
 }
@@ -171,7 +178,7 @@ var paused = false;
 var frozen = false; // new: keeps updating, but stops physics
 var prevPause = false;
 var mouseX, mouseY;
-var spd = 5;
+var spd = 10;
 var selected = 1;
 var firing = false;
 var gunSize;
@@ -195,7 +202,7 @@ var prizeCollected = false;
 var kills = 0;
 var dead = false;
 var stageDone = false;
-var immortal = false;
+var immortal = true;
 var firstDone = false;
 
 customStatus = null;
@@ -589,12 +596,21 @@ function updateGame() {
 		var ok = true;
 		if (levelInfo.aesthetics['barrier']) {
 			for (const a of levelInfo.aesthetics.barrier) {
-				if (colliding({x: x, y: y, r: 35}, {x: a[0], y: a[1], w: a[2], h: a[3]})) ok = false;
+				if (colliding({x: x, y: y, r: 35}, {x: a[0], y: a[1], w: a[2], h: a[3]})) {
+                    if (Math.abs(x - a[0]) < 38/* && Math.abs(x - a[0]) > 27*/){
+                        x = a[0] - 36;
+                    }
+                    if (Math.abs(x - (a[0] + a[2])) < 38/* && Math.abs(x - (a[0] + a[2])) > 27*/){
+                        x = a[0] + a[2] + 36;
+                    }
+                    if (Math.abs(y - a[1]) < 38/* && Math.abs(y - a[1]) > 27*/){
+                        y = a[1] - 36;
+                    }
+                    if (Math.abs(y - (a[1] + a[3])) < 38/* && Math.abs(y - (a[1] + a[3])) > 27*/){
+                        y = a[1] + a[3] + 36;
+                    }
+                }
 			}
-		}
-		if (!ok) {
-			x = oldx;
-			y = oldy;
 		}
 	} else {
         if (!firing) {
@@ -687,13 +703,27 @@ function updateGame() {
 	}
     newMissiles = [];
     for (var i = 0; i < missiles.length; i++){
-        if ((x-missiles[i].x)*(x-missiles[i].x) + (y-missiles[i].y)*(y-missiles[i].y) <= (35 + missiles[i].size)*(35 + missiles[i].size) && !frozen){
+		if (levelInfo.aesthetics.barrier) {
+			for (const b of levelInfo.aesthetics.barrier) {
+				if (colliding({
+					x: missiles[i].x,
+					y: missiles[i].y,
+					r: missiles[i].size/2
+				}, {
+					x: b[0],
+					y: b[1],
+					w: b[2],
+					h: b[3]
+				})) missiles[i].damage = 0;
+			}
+		}
+        if ((x-missiles[i].x)*(x-missiles[i].x) + (y-missiles[i].y)*(y-missiles[i].y) <= (35 + missiles[i].size/2)*(35 + missiles[i].size/2) && !frozen){
 			hits++;
             hp -= missiles[i].damage;
             missiles[i].damage = 0;
         }
         for (var j = 0; j < bullets.length; j++){
-            if ((bullets[j].x-missiles[i].x)*(bullets[j].x-missiles[i].x) + (bullets[j].y-missiles[i].y)*(bullets[j].y-missiles[i].y) <= (bullets[j].r + missiles[i].size)*(bullets[j].r + missiles[i].size)){
+            if ((bullets[j].x-missiles[i].x)*(bullets[j].x-missiles[i].x) + (bullets[j].y-missiles[i].y)*(bullets[j].y-missiles[i].y) <= (bullets[j].r/2 + missiles[i].size/2)*(bullets[j].r/2 + missiles[i].size/2)){
                 var minHP = Math.min(bullets[j].dmg, missiles[i].damage);
                 bullets[j].dmg -= minHP;
                 missiles[i].damage -= minHP;
@@ -732,6 +762,20 @@ function updateGame() {
 		bullets[i].y += bullets[i].ySpeed;
 		bullets[i].total += bullets[i].speed;
 		var collided = false;
+		if (levelInfo.aesthetics.barrier) {
+			for (const b of levelInfo.aesthetics.barrier) {
+				if (colliding({
+					x: bullets[i].x,
+					y: bullets[i].y,
+					r: bullets[i].r/2
+				}, {
+					x: b[0],
+					y: b[1],
+					w: b[2],
+					h: b[3]
+				})) collided = true;
+			}
+		}
 		Object.keys(levelInfo.enemies).forEach((k) => {
 			if (collided) return;
 			var array = levelInfo.enemies[k];
@@ -740,7 +784,7 @@ function updateGame() {
 				if (enemy.health > 0 && colliding({
 					'x': bullets[i].x,
 					'y': bullets[i].y,
-					'r': bullets[i].r
+					'r': bullets[i].r/2
 				}, {
 					'x': enemy.x,
 					'y': enemy.y,
@@ -783,6 +827,9 @@ var firstTime = true;
 var gunsLoaded = true;
 var tipSelected = randint(0, tips.length-1);
 function update() {
+	if (draw.keyIsDown(70) && document.activeElement == document.body) {
+		document.querySelector('#feedback').style.display = 'block';
+	}
 	if (draw.keyIsDown(80) && document.activeElement == document.body && false) {
 		if (!prevPause) {
 			paused = !paused;
@@ -1037,7 +1084,7 @@ var s = function(sketch) {
 		totalOriginalHealth = 0;
 		totalOriginalEnemies = 0;
 		Object.keys(enemies).forEach((e) => {
-			console.log(`${e} og health: ${enemies[e].health}`);
+			// console.log(`${e} og health: ${enemies[e].health}`);
 			if (levelInfo.enemies[e]) levelInfo.enemies[e].forEach((n) => {
 				totalOriginalEnemies++;
 				totalOriginalHealth += n.health ?? enemies[e].health;

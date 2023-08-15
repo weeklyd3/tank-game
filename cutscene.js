@@ -3,12 +3,55 @@ var inCutscene = false;
 	async function cutscene(callbacks, prepare, after, options) {
 		var settings = {
 			fadeoutStart: true,
-			fadeoutEnd: true
+			fadeoutEnd: true,
+			skippable: false,
+			skipKey: ' ',
+			skipKeyText: 'space'
 		};
+		function drawSkip() {
+			if (!settings.skippable) return;
+			draw.push();
+			draw.textSize(25);
+			draw.fill('black');
+			draw.textAlign(draw.RIGHT, draw.BOTTOM);
+			draw.text(`${settings.skipKeyText} = skip`, width, height);
+			draw.pop();
+		}
+		function skipcb(ev) {
+			if (!settings.skippable) return;
+			if (skipped) return;
+			if (ev.key != settings.skipKey) return;
+			skipped = true;
+			fadeOutAndIn(() => {
+				return new Promise((resolve) => {
+					skipKey.skip = true;
+					addEventListener('TankGame.update', async function cb() {if (allDone) {
+						removeEventListener('TankGame.update', cb);
+						removeEventListener('TankGame.updateDone', drawSkip);
+						if (after) await after(cutsceneScope, skipKey);
+						resolve();
+					}
+					})
+				});
+			})
+		}
+		var skipped = false;
+		var skipKey = {skip: false};
+		var cutsceneScope = {};
+		var allDone = false;
 		for (const k in options) settings[k] = options[k];
-		if (settings.fadeoutStart) await advancedFadeOutAndIn([prepare ?? function() {}], false);
-		for (const f of callbacks) await f();
-		if (settings.fadeoutEnd) await fadeOutAndIn(after ?? function() {});
+		if (prepare) prep = () => prepare(cutsceneScope, skipKey);
+		else prep = function() {};
+		if (settings.fadeoutStart) await advancedFadeOutAndIn([prep], false);
+		addEventListener('TankGame.updateDone', drawSkip);
+		if (settings.skippable) addEventListener('keydown', skipcb);
+		for (const f of callbacks) await f(cutsceneScope, skipKey);
+		allDone = true;
+		if (settings.skippable) removeEventListener('keydown', skipcb);
+		removeEventListener('TankGame.updateDone', drawSkip);
+		if (after) var aft = () => after(cutsceneScope, skipKey);
+		else aft = function() {};
+		if (settings.fadeoutEnd && !skipped) await fadeOutAndIn(aft);
 		else frozen = false;
 	}
 	function fade(opacityChange = -2, start = 100) {
@@ -54,8 +97,20 @@ var inCutscene = false;
 		if (unpause) frozen = false;
 		await fade(2, 0);
 	}
-	function wait(ms) {
-		return new Promise((a) => setTimeout(a, ms));
+	function wait(ms, skipToken) {
+		return new Promise((resolve) => {
+			var frames = ms * fps / 1000;
+			addEventListener('TankGame.update', function cb() {
+				frames--;
+				if (frames <= 0 || (skipToken && skipToken.skip)) {
+					resolve();
+					removeEventListener('TankGame.update', cb);
+				}
+			});
+		});
+	}
+	function realTimeWait(ms) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 	function testFading() {
 		fadeOutAndIn(async () => {
@@ -77,5 +132,5 @@ var inCutscene = false;
 			})
 		}
 	}
-	window.cutsceneAPI = {cutscene, fadeOutAndIn, advancedFadeOutAndIn, fadeToBlack, testFading, wait, fade, spawnExplosion};
+	window.cutsceneAPI = {cutscene, fadeOutAndIn, advancedFadeOutAndIn, fadeToBlack, testFading, wait, realTimeWait, fade, spawnExplosion};
 })(window);

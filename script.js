@@ -94,6 +94,8 @@ class _underTheBus extends Error {
 // for idiots like me
 documnent = document;
 documnet = document;
+doucment = document;
+doucmnet = document;
 function throwUnderTheBus(msg) {
 	throw new _underTheBus(msg);
 }
@@ -169,5 +171,52 @@ link.href = 'https://tickets.weeklyd3.repl.co/?do=new';
 link.textContent = "report a bug";
 link.style.backgroundColor = 'black';
 link.style.color = 'white';
+var feedback = document.createElement('div');
+feedback.id = 'feedback';
+feedback.innerHTML = `
+<p>After finishing the level, you can provide feedback here. For error reports,
+<a href="https://tickets.weeklyd3.repl.co/?do=new">use the reporting system</a>.</p>
+<form onsubmit="feedbackDone()" action="javascript:;">
+<label>Feedback:<br />
+<textarea rows="10" cols="40" id="fb"></textarea></label><br />
+<label>
+Your Discord (optional) so we can contact you later:
+<input id="discord" />
+</label>
+<br />
+<button id="fb-submit">Submit</button>
+<button onclick="feedback.style.display = 'none'" type="button">Close</button>
+</form>
+`;
+feedback.style.display = 'none';
+async function feedbackDone() {
+	var feedback = document.querySelector('#fb').value;
+	var submit = document.querySelector('#fb-submit');
+	submit.disabled = 'disabled';
+	var data = new FormData();
+	data.set('feedback', feedback);
+	data.set('discord', document.querySelector('#discord').value);
+	body = [];
+	data.forEach((value, key) => {
+		var encode1 = encodeURIComponent(key);
+		var encode2 = encodeURIComponent(value);
+		body.push(`${encode1}=${encode2}`);
+	});
+	fetch('https://discord-bot.weeklyd3.repl.co/feedback', {
+		'method': "POST",
+
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+},
+		'body': body.join('&')
+	})
+	.then((r) => r.text())
+	.then((t) => {
+		submit.value = t;
+		submit.parentNode.after(document.createTextNode("Feedback sent! Feel free to close this."));
+		l.parentNode.removeChild(l);
+	});
+}
+document.body.appendChild(feedback);
 if (['/intro.html', '/game.html'].indexOf(location.pathname) == -1) document.body.appendChild(link);
 console.log("Please do not abuse this console.")

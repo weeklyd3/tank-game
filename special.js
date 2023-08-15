@@ -1,5 +1,8 @@
 function addSpecial(forwhat, callback, once = false) {
-	if (typeof level == 'undefined') throwUnderTheBus('no level found');
+	if (typeof level == 'undefined') {
+		// throwUnderTheBus('no level found');
+		return;
+	}
 	if (level == forwhat) {
 		if (once) callback();
 		else updateCallbacks.push(callback);
@@ -60,6 +63,7 @@ addSpecial('-2', function() {
 addSpecial('2', function() {
 	if (window.allDead == undefined) allDead = false;
 	if (window.twoSpawned == undefined) twoSpawned = false;
+	if (window.bossStart == undefined) bossStart = false;
 	if (!window.oneframe) {
 		oneframe = true;
 		return;
@@ -71,6 +75,45 @@ addSpecial('2', function() {
 			levelInfo.getEnemyById('rndspawn2').y = 700;
 			cutsceneAPI.spawnExplosion(3550, 160, 100, 60, [255, 0, 0]);
 			cutsceneAPI.spawnExplosion(3550, 760, 100, 60, [255, 0, 0]);
+		}
+	}
+	if (!bossStart) {
+		if (x > 4500) {
+			bossStart = true;
+			cutsceneAPI.cutscene([async (scope, key) => {
+				x = 4400;
+				y = 450;
+				function c() { x += 5; }
+				addEventListener('TankGame.update', c);
+				await cutsceneAPI.wait(1300, key);
+				removeEventListener('TankGame.update', c);
+				await cutsceneAPI.wait(500, key);
+				var e = [4300, 350, 100, 200, "chocolate", 1];
+				e.id = 'bossbarrier';
+				scope.bossbarrier = e;
+				levelInfo.aesthetics['barrier'].push(e);
+				var boss = levelInfo.getEnemyById('boss');
+				boss.y = -200;
+				function bossMove() {
+					boss.y += 5;
+				}
+				scope.boss = boss;
+				scope.bossMove = bossMove;
+				addEventListener('TankGame.update', bossMove);
+				await cutsceneAPI.wait(118 / fps * 1000, key);
+				removeEventListener('TankGame.update', bossMove);
+				addEventListener('TankGame.enemyDeath', (ev) => {
+					if (ev.detail[0] == boss) levelInfo.getAestheticById('bossbarrier')[0] = -1000;
+				});
+			}], () => {x = 4400; y = 450;}, (scope) => {
+				scope.boss.y = 390;
+				x = 4595;
+				y = 450;
+			}
+				, {
+				fadeoutEnd: false,
+				skippable: true
+			})
 		}
 	}
 	if (!allDead) {
