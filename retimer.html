@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+            "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><title>speedrun retimer</title></head>
+<body>
+	<div id="intro">
+	<h1>Speedrun Retimer</h1>
+	<p>analyze your runs frame by frame to see the actual time.</p>
+	<h2>not done yet!</h2></div>
+	<style>
+		#time { font-size: 50px; }
+		#ms { font-size: 35px; }
+	</style>
+	<div id="timer" hidden="hidden">
+		<button onclick="fadvance(-30)">-30f</button>
+		<button onclick="fadvance(-5)">-5f</button>
+		<button onclick="fadvance(-1)">-1f</button>
+		<button onclick="fadvance(1)">+1f</button>
+		<button onclick="fadvance(5)">+5f</button>
+		<button onclick="fadvance(30)">+30f</button>
+		<button onclick="startTimer(this)">start</button>
+		<button onclick="split()" disabled="disabled" id="stop">split</button>
+		<button onclick="if (vid.paused) vid.play(); else vid.pause();">play/pause</button>
+		<div>
+			<table><tr><td>
+			<video id="vid" style="width: 75%;"></video></td>
+				<td style="width: 0;">
+			<table id="timertable">
+				<tr><th>Split</th><th>Time</th></tr>
+				<tr id="tableLast">
+					<td colspan="2" style="text-align: right;">
+						<span id="time"><span id="seconds">0</span><span id="ms">.000</span>
+					</td>
+				</tr></td></tr>
+			</table>
+				</table>
+		</div>
+	</div>
+	<script>
+		function submitTimer() {
+			splits = document.querySelector('textarea#splits').value;
+			if (!splits) splits = 'Time';
+			splits = splits.split("\n");
+			for (const s of splits) {
+				var row = document.createElement('tr');
+				var name = document.createElement('td');
+				name.textContent = s;
+				row.appendChild(name);
+				var time = document.createElement('td');
+				time.textContent = '-';
+				row.appendChild(time);
+				var table = document.querySelector('#timertable').children[0];
+				document.querySelector('#tableLast').before(row);
+			}
+			currentSplit = 0;
+			lastSplitTime = 0;
+			document.querySelector('#intro').hidden = 'hidden';
+			startTime = null;
+			interval = setInterval(updatectime, 1000 / fps);
+
+			fps = document.querySelector('#fps').value;
+			const file = document.querySelector('#video').files[0];
+			var url = URL.createObjectURL(file);
+			var src = document.createElement('source');
+			src.setAttribute('src', url);
+			document.querySelector('#vid').appendChild(src);
+			document.querySelector('form').hidden = 'hidden';
+			document.querySelector('#timer').hidden = '';
+		}
+		var vid = document.querySelector('#vid');
+		function fadvance(frames) {
+			var eachFrame = 1000 / fps;
+			vid.currentTime += (eachFrame * frames) / 1000;
+		}
+		function updatectime() {
+			if (startTime !== null) {
+				var currentTime = Math.round(1000 * (vid.currentTime - startTime)) / 1000;
+				var [timeString, decimals] = proc(currentTime);
+				document.querySelector('#seconds').textContent = timeString;
+				document.querySelector('#ms').textContent = decimals;
+			}
+		}
+		function proc(currentTime) {
+			var decimals = currentTime % 1;
+			var timeString = '';
+			var int = Math.floor(currentTime);
+			var hours = Math.floor(int / 3600);
+			if (hours) timeString += hours + ':';
+			var minutes = Math.floor(int / 60) - hours * 60;
+			if (!hours && minutes) timeString += minutes;
+			if (hours) timeString += minutes.padStart(2, '0');
+			var seconds = int % 60;
+			if (!hours && !minutes) timeString += seconds;
+			if (hours || minutes) timeString += seconds.padStart(2, '0');
+			if (!timeString) timeString = '0';
+			var decimals = decimals.toFixed(3);
+			decimals = decimals.slice(1);
+			return [timeString, decimals]
+		}
+		function startTimer(b) {
+			document.querySelector('#stop').disabled = '';
+			b.disabled = 'disabled';
+			document.querySelector('#time').style.color = 'green';
+			startTime = vid.currentTime;
+		}
+		function split() {
+			var table = document.querySelector('#timertable').children[0]; // <tbody>
+			var row = table.children[1 + currentSplit];
+			row.children[1].textContent = proc(Math.round(1000 * (vid.currentTime - startTime)) / 1000).join('');		
+			currentSplit++;
+			if (currentSplit == splits.length) stopTimer();
+		}
+		function stopTimer() {
+			document.querySelector('#stop').disabled = 'disabled';
+			document.querySelector('#time').style.color = 'blue';
+			startTime = null;
+		}
+	</script>
+	<form action="javascript:;" onsubmit="submitTimer()">
+		<ul>
+			<li><label><input type="file" id="video" accept="video/*" /> select your run (this will not be uploaded)</label></li>
+			<li><label><input type="number" value="30" min="1" id="fps" /> enter fps of video</label></li>
+		</ul>
+		<details>
+			<summary>Add splits</summary>
+			<label>Add splits, separated by newlines:<br />
+			<textarea rows="5" cols="20" id="splits"></textarea></label>
+		</details>
+		<button>submit</button>
+	</form>
+</body></html>

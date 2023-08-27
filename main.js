@@ -15,12 +15,16 @@ var tips = [
     "Move right and kill all enemies to win",
     "Win a level to unlock the next one",
     "Use coins to buy upgrades from the shop",
-	"Send feedback by pressing F after the level"
+	"Send feedback by pressing F after the level",
+    "Barriers are very sticky and lava is very hot"
 ];
 var gameStarted = false;
 var width = 2000;
 var height = 900;
+var ogfps = 30;
 var fps = 30;
+if (new URL(location.href).searchParams.get('fps')) fps = new URL(location.href).searchParams.get('fps');
+var physicsSpeed = 1;
 var player;
 var gun1, gun2, gun3, gunX;
 var loadStage, weapons;
@@ -161,6 +165,8 @@ var experiments = {
 };
 experiments.add('mousemode', "Allows moving with the mouse. There are 8 areas which move the player differently. Clicking still shoots, and holding B brakes.");
 experiments.add('ammoloss', "Removes and replenishes ammo, like it always should!");
+experiments.add('revive', "Revives you on death. For testing.");
+experiments.add('radar', "Shows nearby objects.");
 var totalDeadFrames = 40;
 var x = 50;
 var y = height / 2;
@@ -178,7 +184,7 @@ var paused = false;
 var frozen = false; // new: keeps updating, but stops physics
 var prevPause = false;
 var mouseX, mouseY;
-var spd = 10;
+var spd = 5;
 var selected = 1;
 var firing = false;
 var gunSize;
@@ -202,7 +208,7 @@ var prizeCollected = false;
 var kills = 0;
 var dead = false;
 var stageDone = false;
-var immortal = true;
+var immortal = false;
 var firstDone = false;
 
 customStatus = null;
@@ -211,6 +217,7 @@ customStatusOriginal = null;
 function updateGame() {
     if (immortal) hp = Infinity;
 	if (paused) return;
+	multiplier = physicsSpeed * ogfps / fps;
 	triggerEvent('update');
 	gunSize = weapons[guns[selected - 1]].size[weapons[guns[selected - 1]].size.length - 1] + 10;
 	draw.push();
@@ -219,9 +226,14 @@ function updateGame() {
 	draw.background(draw.color(loadStage['background']));
 	draw.pop();
 	draw.stroke('white');
+	if (levelInfo.background && levelInfo.background.beforeAesthetics) {
+		draw.image(levelInfo.background.image, -x + width / 2, -y + height / 2);
+	}
     Object.keys(levelInfo.aesthetics).forEach(function(key) {
         var value = levelInfo.aesthetics[key];
         for (var i = 0; i < value.length; i++){
+			var ae = value[i];
+			if (ae.x > (x + width / 2 + 500) || (ae.x < (x - width / 2 - 500))) continue;
             draw.strokeWeight(0);
 			if (key == "rect"){
                 draw.push();
@@ -257,9 +269,51 @@ function updateGame() {
 				draw.rect(value[i][0] - x+width/2, value[i][1] -y+height/2, value[i][2], value[i][3]);
 				setOpacity(draw, 1);
 			}
+			if (key == 'lava') {
+				if (value[i].frames == undefined) {
+					value[i].frames = 0;
+					value[i].change = 1;
+					value[i].bubbles = [];
+				}
+				value[i].frames += multiplier * value[i].change;
+				if (!(value[i].frames % 10)) value[i].bubbles.push({
+                    // make the end size random
+                    // ur making it bubble? yeah
+					x: value[i][0] + 25 + Math.random() * (value[i][2] - 25),
+					y: value[i][1] + 25 + Math.random() * (value[i][3] - 25),
+					r: 0,
+					opacity: 100,
+					opacityChange: 2 + Math.random() * 4,
+					speed: 0.5 + Math.random() * 0.1
+				});
+				if (value[i].frames > 30) value[i].change = -value[i].change;
+				if (value[i].frames < 0) {
+					value[i].frames = 0;
+					value[i].change = -value[i].change;
+				}
+				draw.push();
+				draw.fill(draw.color(255, value[i].frames / 50 * 160, 0));
+				draw.rect(value[i][0] - x+width/2, value[i][1] -y+height/2, value[i][2], value[i][3]);
+				value[i].bubbles = value[i].bubbles.filter((b) => {
+					setOpacity(draw, b.opacity / 100);
+					draw.fill(draw.color(0, 0, 0, 0));
+					draw.stroke('white');
+					draw.strokeWeight(2);
+                    b.speed += 0.01 * multiplier;
+					b.r += b.speed * multiplier;
+					b.opacity -= b.opacityChange * multiplier;
+					if (b.opacity < 0) b.opacity = 0;
+					draw.circle(-x + width / 2 + b.x, -y + height / 2 + b.y, b.r * 2);
+					setOpacity(draw, 1);
+					return b.opacity > 0;
+				})
+				draw.pop();
+			}
         }
     });
-
+	if (levelInfo.background && !levelInfo.background.beforeAesthetics) {
+		draw.image(levelInfo.background.image, -x + width / 2, -y + height / 2);
+	}
 	draw.push();
 	draw.strokeWeight(gunSize);
 	draw.stroke('black');
@@ -299,15 +353,16 @@ function updateGame() {
 		draw.fill(draw.color(0, 0, 0, 0));
 		draw.strokeWeight(10);
 		setOpacity(draw, 1);
-		if ((Date.now() - cooldowns[selected]) <= (weapons[guns[selected - 1]]["cooldown"] + fadeoutTime)) {
+		if (cooldowns[selected] > -fadeoutTime) {
+			cooldowns[selected] -= 1000 / fps * multiplier;
 			draw.angleMode(draw.DEGREES);
-			var percentDone = (Date.now() - cooldowns[selected]) / weapons[guns[selected - 1]].cooldown * 100;
+			var percentDone = (weapons[guns[selected - 1]].cooldown - cooldowns[selected]) * 100 / weapons[guns[selected - 1]].cooldown;
 			var done = percentDone / 100;
 			draw.stroke(draw.color(255 * (1 - done), 255 * done, 0));
-			var over = (weapons[guns[selected - 1]].cooldown + fadeoutTime - (Date.now() - cooldowns[selected]));
+			var over = -cooldowns[selected];
 			var opacity = 1;
 			if (done > 1) {
-				var opacity = over / fadeoutTime * 255;
+				var opacity = (1 - over / fadeoutTime) * 255;
 				draw.stroke(draw.color(255 * (1 - done), 255 * done, 0, opacity));
 				done = 1;
 			}
@@ -413,16 +468,18 @@ function updateGame() {
 				'h': value[i].sizeY
 			}) && value[i].health > 0 && !frozen) {
 				var enemyhp = value[i].health;
-				if (enemyhp <= hp) {
+				if (enemyhp < hp) {
 					value[i].health = 0;
 					hp -= enemyhp;
-					return;
 				}
-				if (enemyhp >= hp) {
+				if (enemyhp === hp) {
+					hp = 0;
+					value[i].health = 0;
+				}
+				if (enemyhp > hp) {
 					hp = 0;
 					value[i].health -= hp;
 					if (value[i].health < 0) value[i].health = 0;
-					return;
 				}
 			}
 			if (value[i].health <= 0) {
@@ -433,23 +490,27 @@ function updateGame() {
 					callEvents('enemyDeath', value[i]);
 					value[i].deadFrames = 0;
 				}
-				if (!frozen) value[i].deadFrames++;
+				if (!frozen) value[i].deadFrames += multiplier;
 				// make it start shaking
-				var multiplier = Math.sqrt(value[i].deadFrames);
+				var smultiplier = Math.sqrt(value[i].deadFrames);
 				setOpacity(draw, value[i].deadFrames / totalDeadFrames);
 				draw.fill('white');
 				draw.rect(value[i].x-x+width/2, value[i].y-y+height/2, value[i].sizeX, value[i].sizeY)
 				setOpacity(draw, 1);
-				value[i].x += (Math.random() - 0.5) * multiplier;
-				value[i].y += (Math.random() - 0.5) * multiplier;
+				value[i].x += (Math.random() - 0.5) * smultiplier;
+				value[i].y += (Math.random() - 0.5) * smultiplier;
 				if (value[i].deadFrames > totalDeadFrames) value[i].actuallyDead = true;
 			}
 			if (value[i].motile) {
-				if (!value[i].speed) value[i].speed = 3;
-                if (value[i].y > value[i].lim[1] || value[i].y < value[i].lim[0]){
-                    value[i].speed *= -1;
-                }
-                if (!frozen) value[i].y += value[i].speed;
+				if (!value[i].lim) {
+					console.warn("motile enemy:", value[i], "is missing a `lim` attribute.");
+				} else {
+					if (!value[i].speed) value[i].speed = 3;
+	                if (value[i].y > value[i].lim[1] || value[i].y < value[i].lim[0]){
+	                    value[i].speed *= -1;
+	                }
+	                if (!frozen) value[i].y += value[i].speed * multiplier;
+				}
 			}
             newEnemies.push(value[i]);
 			// should it also add the treads automatically?
@@ -458,17 +519,18 @@ function updateGame() {
         levelInfo.enemies[key] = newEnemies;
     });
 	explosionParticles = explosionParticles.filter((p) => {
-		p.opacity -= 1;
-		setOpacity(draw, p.opacity / 50);
-		p.color[2] -= 4;
-		p.color[1] -= 1.1;
+		p.opacity -= multiplier;
+		if (p.opacity < 0) p.opacity = 0;
+		setOpacity(draw, Math.round(100 * p.opacity / 50) / 100);
+		p.color[2] -= 4 * multiplier;
+		p.color[1] -= 1.1 * multiplier;
 		if (p.custom) draw.fill(...p.custom);
 		else draw.fill(...p.color);
 		draw.strokeWeight(0);
 		draw.circle(p.x-x+width/2, p.y-y+height/2, p.r * 2);
 		setOpacity(draw, 1);
 		if (frozen) return;
-		point = movePointAtAngle(p.x, p.y, p.angle, p.speed);
+		point = movePointAtAngle(p.x, p.y, p.angle, p.speed * multiplier);
 		p.x = point[0];
 		p.y = point[1];
         if (p.opacity < 0 && p.player) {paused = true; pauseDrawn = false;}
@@ -530,26 +592,38 @@ function updateGame() {
 	}
 	// draw everything up here
 	if (paused) return;
+	var inlava = false;
+	if (levelInfo.aesthetics['lava']) {
+		for (const a of levelInfo.aesthetics.lava) {
+			if (colliding({x: x, y: y, r: 30}, {x: a[0], y: a[1], w: a[2], h: a[3]})) {
+				inlava = true;
+				hp -= 2;
+			}
+		}
+	}
+	var lavaMultiplier = 1;
+	if (inlava) lavaMultiplier = 0.5;
 	var oldx = x, oldy = y;
 	// move everything down here
 	if (Math.abs(recoil[1]) > 0.1 || Math.abs(recoil[0]) > 0.1) {
 		if (!frozen) {
-			x += recoil[0];
-			y += recoil[1];
-			recoil[0] = 0.9 * recoil[0];
-			recoil[1] = 0.9 * recoil[1];
+			x += recoil[0] * multiplier;
+			y += recoil[1] * multiplier;
+			recoil[0] -= 0.1 * multiplier * recoil[0];
+			recoil[1] -= 0.1 * multiplier * recoil[1];
 		}
 	}
 	else {
 		recoil[1] = 0
 		recoil[0] = 0
 	}
+	if (hp <= 0 && experiments.revive) hp = oghp;
 	if (hp > 0) {
 		if (!experiments.mousemode && !frozen) {
-			if (draw.keyIsDown(draw.RIGHT_ARROW) || draw.keyIsDown(68)) x += spd;
-			if (draw.keyIsDown(draw.LEFT_ARROW) || draw.keyIsDown(65)) x -= spd;
-			if (draw.keyIsDown(draw.UP_ARROW) || draw.keyIsDown(87)) y -= spd;
-			if (draw.keyIsDown(draw.DOWN_ARROW) || draw.keyIsDown(83)) y += spd;
+			if (draw.keyIsDown(draw.RIGHT_ARROW) || draw.keyIsDown(68)) x += spd * multiplier * lavaMultiplier;
+			if (draw.keyIsDown(draw.LEFT_ARROW) || draw.keyIsDown(65)) x -= spd * multiplier * lavaMultiplier;
+			if (draw.keyIsDown(draw.UP_ARROW) || draw.keyIsDown(87)) y -= spd * multiplier * lavaMultiplier;
+			if (draw.keyIsDown(draw.DOWN_ARROW) || draw.keyIsDown(83)) y += spd * multiplier * lavaMultiplier;
 		} else {
 			var mousex = draw.mouseX;
 			var mousey = draw.mouseY;
@@ -590,43 +664,51 @@ function updateGame() {
 				xmul = 0;
 				ymul = 0;
 			}
-			x += spd * xmul;
-			y += spd * ymul;
+			x += spd * xmul * multiplier * lavaMultiplier;
+			y += spd * ymul * multiplier * lavaMultiplier;
 		}
 		var ok = true;
 		if (levelInfo.aesthetics['barrier']) {
 			for (const a of levelInfo.aesthetics.barrier) {
-				if (colliding({x: x, y: y, r: 35}, {x: a[0], y: a[1], w: a[2], h: a[3]})) {
-                    if (Math.abs(x - a[0]) < 38/* && Math.abs(x - a[0]) > 27*/){
-                        x = a[0] - 36;
-                    }
-                    if (Math.abs(x - (a[0] + a[2])) < 38/* && Math.abs(x - (a[0] + a[2])) > 27*/){
-                        x = a[0] + a[2] + 36;
-                    }
-                    if (Math.abs(y - a[1]) < 38/* && Math.abs(y - a[1]) > 27*/){
-                        y = a[1] - 36;
-                    }
-                    if (Math.abs(y - (a[1] + a[3])) < 38/* && Math.abs(y - (a[1] + a[3])) > 27*/){
-                        y = a[1] + a[3] + 36;
-                    }
-                }
+				if (colliding({x: x, y: y, r: 35}, {x: a[0], y: a[1], w: a[2], h: a[3]})) ok = false;
+			}
+			if (!ok) {
+				x = oldx;
+				y = oldy;
+			}
+			for (const a of levelInfo.aesthetics.barrier) {
+				// if (colliding({x: x, y: y, r: 35}, {x: a[0], y: a[1], w: a[2], h: a[3]})) {
+    //                 if (Math.abs(x - a[0]) < 38/* && Math.abs(x - a[0]) > 27*/){
+    //                     x = a[0] - 36;
+    //                 }
+    //                 if (Math.abs(x - (a[0] + a[2])) < 38/* && Math.abs(x - (a[0] + a[2])) > 27*/){
+    //                     x = a[0] + a[2] + 36;
+    //                 }
+    //                 if (Math.abs(y - a[1]) < 38/* && Math.abs(y - a[1]) > 27*/){
+    //                     y = a[1] - 36;
+    //                 }
+    //                 if (Math.abs(y - (a[1] + a[3])) < 38/* && Math.abs(y - (a[1] + a[3])) > 27*/){
+    //                     y = a[1] + a[3] + 36;
+    //                 }
+    //             }
 			}
 		}
 	} else {
+
         if (!firing) {
 			if (window.deadTime == undefined) deadTime = Date.now();
-			dead = true;
 			if (!window.yourDeathTriggered) {
 				window.yourDeathTriggered = true;
 				triggerEvent('yourDeath');
 			}
+			dead = true;
 		}
 		draw.textAlign(draw.CENTER);
 		draw.textSize(50);
 		draw.fill('black');
 		draw.text('YOU DIED', 0, 200, width);
 		draw.text('Click the screen to return to the main page', 0, 300, width);
-		bubbleFrames++;
+		bubbleFrames += multiplier;
 		if (bubbleFrames == maxBubbleFrames) {
 			// create explosion
 			for (var i = 0; i < 200; i++) {
@@ -656,7 +738,7 @@ function updateGame() {
 	Object.values(levelInfo.enemies).forEach((v) => totalEnemies += v.length);
 	if (totalEnemies <= 0 && !explosionParticles.length && !window.noWin) {
 		if (!window.winFrames) window.winFrames = 0;
-		winFrames++;
+		winFrames += multiplier;
 		if (!stageDone) doneTime = Date.now();
 		if (!firing) stageDone = true;
 		if (winFrames > (fps * 2)) {
@@ -674,9 +756,9 @@ function updateGame() {
 		}
 	}
 	if (!frozen) {
-		if (draw.keyIsDown(49) && guns[0]) { selected = 1; cooldowns[selected] = Date.now() }
-		if (draw.keyIsDown(50) && guns[1]) { selected = 2; cooldowns[selected] = Date.now() }
-		if (draw.keyIsDown(51) && guns[2]) { selected = 3; cooldowns[selected] = Date.now() }
+		if (draw.keyIsDown(49) && guns[0]) { selected = 1; cooldowns[selected] = -1000; }
+		if (draw.keyIsDown(50) && guns[1]) { selected = 2; cooldowns[selected] = -1000; }
+		if (draw.keyIsDown(51) && guns[2]) { selected = 3; cooldowns[selected] = -1000; }
 		if (y < 35) y = 35;
 		if (x < 35) x = 35;
 		if (y > 865) y = 865;
@@ -684,27 +766,37 @@ function updateGame() {
 	}
 	mouseX = draw.mouseX;
 	mouseY = draw.mouseY;
-	if ((firing || (experiments.mousemode && draw.keyIsDown(32))) && Date.now() - cooldowns[selected] >= weapons[guns[selected - 1]]["cooldown"] && hp > 0 && !frozen) {
+	if ((firing || (experiments.mousemode && draw.keyIsDown(32))) && (cooldowns[selected] <= 0) && hp > 0 && !frozen) {
         if (equippedGuns[guns[selected-1]][3] > 0){
             equippedGuns[guns[selected-1]][3] --;
     		var rec = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, -weapons[guns[selected - 1]]["recoil"]);
-    		cooldowns[selected] = Date.now();
+    		cooldowns[selected] = weapons[guns[selected - 1]].cooldown;
     		recoil[0] += rec[0];
     		recoil[1] += rec[1];
-    		if (guns[selected - 1] == "basic") {
-    			var tempSpeed = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, weapons["basic"].speed[0]);
-                var bulletSpeed = rotatePoint(width/2+tempSpeed[0], height/2+tempSpeed[1], width/2, height/2, randint(-weapons[guns[selected-1]].spread, weapons[guns[selected-1]].spread)); // placeholder
-    			var bulletSpawn = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, 70);
-    			draw.stroke(0);
-    			bullets.push({ "x": x + bulletSpawn[0], "y": y + bulletSpawn[1], "r": weapons["basic"].size[0], "total": 0, "speed": weapons["basic"].speed[0], "xSpeed": bulletSpeed[0], "ySpeed": bulletSpeed[1], "range": weapons["basic"].range[0], "dmg": weapons["basic"].damage[0] });
-    		}
-            localStorage.weapons = JSON.stringify(equippedGuns);
-        }
+			var gun = guns[selected - 1];
+			for (var i = 0; i < (weapons[guns[selected - 1]].shots ?? 1); i++) {
+	    		if (guns[selected - 1] == "basic" || guns[selected - 1] == "destroyer") {
+					console.log('firing');
+	    			var tempSpeed = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, weapons[gun].speed[0]);
+	                var bulletSpeed = rotatePoint(width/2+tempSpeed[0], height/2+tempSpeed[1], width/2, height/2, randint(-weapons[guns[selected-1]].spread, weapons[guns[selected-1]].spread)); // placeholder
+	    			var bulletSpawn = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, Math.abs(70 - i * 5));
+	    			draw.stroke(0);
+	    			bullets.push({ "x": x + bulletSpawn[0], "y": y + bulletSpawn[1], "r": weapons[gun].size[0], "total": 0, "speed": weapons[gun].speed[0], "xSpeed": bulletSpeed[0], "ySpeed": bulletSpeed[1], "range": weapons[gun].range[0], "dmg": weapons[gun].damage[0] });
+	    		}
+				if (guns[selected - 1] == "") {
+					
+				}
+	            localStorage.weapons = JSON.stringify(equippedGuns);
+	        }
+		}
 	}
     newMissiles = [];
+	var toCheck = [];
+	if (levelInfo.aesthetics.barrier) toCheck.push(...levelInfo.aesthetics.barrier);
+	if (levelInfo.aesthetics.lava) toCheck.push(...levelInfo.aesthetics.lava);
     for (var i = 0; i < missiles.length; i++){
-		if (levelInfo.aesthetics.barrier) {
-			for (const b of levelInfo.aesthetics.barrier) {
+		if (toCheck.length) {
+			for (const b of toCheck) {
 				if (colliding({
 					x: missiles[i].x,
 					y: missiles[i].y,
@@ -739,31 +831,34 @@ function updateGame() {
 		}
         if (missiles[i].homing){
             var next = movePointTowardsAnotherPoint(missiles[i].x, missiles[i].y, x, y, missiles[i].speed[2]);
-            missiles[i].x += next[0];
-            missiles[i].y += next[1];
+            missiles[i].x += next[0] * multiplier;
+            missiles[i].y += next[1] * multiplier;
         }
         else {
-            missiles[i].x += missiles[i].speed[0];
-            missiles[i].y += missiles[i].speed[1];
+            missiles[i].x += missiles[i].speed[0] * multiplier;
+            missiles[i].y += missiles[i].speed[1] * multiplier;
         }
-        missiles[i].travelled += missiles[i].speed[2];
+        missiles[i].travelled += missiles[i].speed[2] * multiplier;
         if (missiles[i].travelled <= missiles[i].range && missiles[i].damage > 0){
             newMissiles.push(missiles[i]);
         }
     }
     missiles = newMissiles;
 	var newBullets = [];
+	var toCheck = [];
+	if (levelInfo.aesthetics.barrier) toCheck.push(...levelInfo.aesthetics.barrier);
+	if (levelInfo.aesthetics.lava) toCheck.push(...levelInfo.aesthetics.lava);
 	for (var i = 0; i < bullets.length; i++) {
 		if (frozen) {
 			newBullets.push(bullets[i]);
 			continue; // HAHA NO WINDBLIGHT SKIP 4 U
 		}
-		bullets[i].x += bullets[i].xSpeed;
-		bullets[i].y += bullets[i].ySpeed;
-		bullets[i].total += bullets[i].speed;
+		bullets[i].x += bullets[i].xSpeed * multiplier;
+		bullets[i].y += bullets[i].ySpeed * multiplier;
+		bullets[i].total += bullets[i].speed * multiplier;
 		var collided = false;
-		if (levelInfo.aesthetics.barrier) {
-			for (const b of levelInfo.aesthetics.barrier) {
+		if (toCheck.length) {
+			for (const b of toCheck) {
 				if (colliding({
 					x: bullets[i].x,
 					y: bullets[i].y,
@@ -1021,6 +1116,7 @@ function update() {
 	triggerEvent('updateDone');
 }
 resized = () => {
+	if (!document.querySelector('canvas')) return;
 	const screenWidth = innerWidth;
 	const screenHeight = innerHeight;
 	const ratio = screenWidth / screenHeight;
@@ -1030,6 +1126,7 @@ resized = () => {
 	if (document.querySelector("canvas").style.cssText !== text) document.querySelector("canvas").style.cssText = text;
 };
 addEventListener('resize', resized);
+var tassing = new URL(location.href).searchParams.get('tas');
 var s = function(sketch) {
 	sketch.setup = async function() {
 		draw.angleMode(draw.DEGREES);
@@ -1040,12 +1137,21 @@ var s = function(sketch) {
 			if (!gameStarted) {
 				started = Date.now();
 				gameStarted = true;
+				if (tassing) {
+					addEventListener('TankGame.updateDone', function removeUpdateInterval() {
+						clearInterval(updateInterval);
+						removeEventListener('TankGame.updateDone', removeUpdateInterval);
+					})
+				}
 			}
             if (dead) window.location.href = "mainpage.html";
             if (stageDone) window.location.href = "mainpage.html";
 		};
 		loadStage = await getJSONResource("stage" + stage + ".json");
 		levelInfo = loadStage['level' + level];
+		if (levelInfo.background) {
+			levelInfo.background.image = draw.loadImage(`images/backgrounds/${levelInfo.background.filename ?? `bg_level${level}`}.svg`);
+		}
 		for (const k of Object.keys(levelInfo.aesthetics)) {
 			for (const a of levelInfo.aesthetics[k]) a['type'] = k;
 		}
@@ -1103,7 +1209,7 @@ var s = function(sketch) {
 		];
 		other.forEach((o) => {
 			images['other'][o] = draw.loadImage(`images/other/${o}.svg`);
-		})
+		});
 		globalThis.updateInterval = setInterval(update, 1000 / fps);
     };
 };

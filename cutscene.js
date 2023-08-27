@@ -10,6 +10,7 @@ var inCutscene = false;
 		};
 		function drawSkip() {
 			if (!settings.skippable) return;
+			if (skipped) return;
 			draw.push();
 			draw.textSize(25);
 			draw.fill('black');
@@ -58,9 +59,11 @@ var inCutscene = false;
 		return new Promise((resolve) => {
 			op = start;
 			addEventListener('TankGame.updateDone', function u() {
-				op += opacityChange;
+				op += opacityChange * multiplier;
 				draw.fill('black');
-				setOpacity(draw, (100 - op) / 100);
+				var opacity = Math.round(100 - op) / 100;
+				if (opacity < 0) opacity = 0;
+				setOpacity(draw, opacity);
 				draw.fill('black');
 				draw.rect(0, 0, width, height);
 				setOpacity(draw, 1);
@@ -99,7 +102,7 @@ var inCutscene = false;
 	}
 	function wait(ms, skipToken) {
 		return new Promise((resolve) => {
-			var frames = ms * fps / 1000;
+			var frames = ms * fps / multiplier / 1000;
 			addEventListener('TankGame.update', function cb() {
 				frames--;
 				if (frames <= 0 || (skipToken && skipToken.skip)) {

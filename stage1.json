@@ -258,6 +258,89 @@
 		}
 	},
 	"level2": {
+		"length": 2000,
+        "aesthetics":{
+            "text": [
+                [500, 450, "Now the enemies can move!", "black", 50]
+            ]
+        },
+        "enemies": {
+            "basic":[
+                {"x": 680, "y": 0, "motile": true, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 5, "lim": [0, 800]},
+                {"x": 1280, "y": 800, "motile": true, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 5, "lim": [0, 800]},
+                {"x": 1880, "y": 400, "motile": true, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 5, "lim": [0, 800]}
+            ]
+        }
+	},
+	"level3": {
+		"length": 5000,
+		"background": {
+			"beforeAesthetics": true
+		},
+		"aesthetics": {
+    "lava": [
+        [
+            0,
+            0,
+            750,
+            350
+        ],
+        [
+            0,
+            550,
+            650,
+            350
+        ],
+        [
+            650,
+            650,
+            200,
+            250
+        ],
+        [
+            750,
+            0,
+            100,
+            230
+        ],
+        [
+            850,
+            0,
+            150,
+            350
+        ],
+        [
+            850,
+            550,
+            150,
+            350
+        ],
+        [
+            1000,
+            0,
+            500,
+            350
+        ],
+        [
+            1250,
+            350,
+            250,
+            25
+        ],
+        [
+            1000,
+            600,
+            700,
+            300
+        ]
+    ]
+},
+		"enemies": {
+			"wall": [{"x": 400, "y": 390, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}],
+			"basic": [{"x": 750, "y": 230, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}]
+		}
+	},
+	"level4": {
 		"length": 5500,
 		"aesthetics": {
 			"text": [
@@ -274,15 +357,18 @@
 				[2500, 0, 500, 350, "chocolate", 1],
 				[4100, 0, 300, 350, "chocolate", 1],
 				[4100, 550, 300, 350, "chocolate", 1]
-			]
+			],
+			"lava": [[200, 0, 200, 100]]
 		},
 		"enemies": {
+			"basic2": [
+				{"x": 5000, "y": -3000, "motile": false, "sizeX":150, "sizeY": 180, "frames": 0, "killable": true, "speed": 10, "id": "boss", "health": 300, "originalHealth": 300}
+			],
 			"basic": [
 				{"x": 200, "y": 660, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
 				{"x": 2200, "y": 115, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
 				{"x": 3500, "y": -2000, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "id": "rndspawn1"},
-				{"x": 3500, "y": -2000, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "id": "rndspawn2"},
-				{"x": 5000, "y": -3000, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "id": "boss", "health": 200, "originalHealth": 200}
+				{"x": 3500, "y": -2000, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10, "id": "rndspawn2"}
 			],
 			"wall": [
 				{"x": 100, "y": 0, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},

@@ -1,3 +1,58 @@
+var radarCanvas;
+addEventListener('TankGame.updateDone', async () => {
+	if (!experiments.radar) return;
+	if (!radarCanvas) radarCanvas = draw.createGraphics(200, 200);
+	radarCanvas.push();
+	radarCanvas.fill('lightgray');
+	radarCanvas.rect(0, 0, 200, 200);
+
+	var playerAngle = angleBetweenTwoPoints(width / 2, height / 2, draw.mouseX, draw.mouseY);
+	radarCanvas.push();
+	radarCanvas.translate(100, 100);
+	radarCanvas.angleMode('degrees');
+	radarCanvas.rotate(playerAngle);
+	radarCanvas.fill('black');
+	radarCanvas.rect(-3, 0, 6, 12);
+	radarCanvas.fill('green');
+	radarCanvas.circle(0, 0, 10);
+	radarCanvas.pop();
+	radarCanvas.fill(draw.color(0, 0, 0, 0));
+	radarCanvas.strokeWeight(2);
+	radarCanvas.stroke('black');
+	var scale = 0.05;
+	radarCanvas.rect(-x * scale + 100, -y * scale + 100, levelInfo.length * scale, 900 * scale);
+	radarCanvas.strokeWeight(0);
+	for (const type in levelInfo.enemies) {
+		if (type == 'debug') continue;
+		for (const e of levelInfo.enemies[type]) {
+			radarCanvas.fill('gray');
+			var [cx, cy] = [e.x + e.sizeX / 2, e.y + e.sizeY / 2];
+			radarCanvas.circle((cx - x) * scale + 100, (cy - y) * scale + 100, 10);
+		}
+	}
+	for (const type in levelInfo.aesthetics) {
+		if (type == 'debug') continue;
+		for (const e of levelInfo.aesthetics[type]) {
+			switch (type) {
+				case 'lava':
+				case 'rect':
+				case 'barrier':
+					if (type == 'lava') var color = 'red';
+					else var color = e[4] ?? 'gray';
+					if (type == 'barrier') setOpacity(radarCanvas, e[5] ?? 0);
+					radarCanvas.fill(color);
+					radarCanvas.rect((e[0] - x) * scale + 100, (e[1] - y) * scale + 100, e[2] * scale, e[3] * scale);
+					setOpacity(radarCanvas, 1);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	radarCanvas.pop();
+	draw.image(radarCanvas, 0, 0, 200, 200);
+});
+
 function addSpecial(forwhat, callback, once = false) {
 	if (typeof level == 'undefined') {
 		// throwUnderTheBus('no level found');
@@ -60,7 +115,7 @@ addSpecial('-2', function() {
 	}
 	window.sinceLastExpansion++;
 })
-addSpecial('2', function() {
+addSpecial('4', function() {
 	if (window.allDead == undefined) allDead = false;
 	if (window.twoSpawned == undefined) twoSpawned = false;
 	if (window.bossStart == undefined) bossStart = false;
@@ -83,7 +138,7 @@ addSpecial('2', function() {
 			cutsceneAPI.cutscene([async (scope, key) => {
 				x = 4400;
 				y = 450;
-				function c() { x += 5; }
+				function c() { x += 5 * multiplier; }
 				addEventListener('TankGame.update', c);
 				await cutsceneAPI.wait(1300, key);
 				removeEventListener('TankGame.update', c);
@@ -95,12 +150,12 @@ addSpecial('2', function() {
 				var boss = levelInfo.getEnemyById('boss');
 				boss.y = -200;
 				function bossMove() {
-					boss.y += 5;
+					boss.y += 5 * multiplier;
 				}
 				scope.boss = boss;
 				scope.bossMove = bossMove;
 				addEventListener('TankGame.update', bossMove);
-				await cutsceneAPI.wait(118 / fps * 1000, key);
+				await cutsceneAPI.wait((360 + 200) / 5 / fps * 1000, key);
 				removeEventListener('TankGame.update', bossMove);
 				addEventListener('TankGame.enemyDeath', (ev) => {
 					if (ev.detail[0] == boss) levelInfo.getAestheticById('bossbarrier')[0] = -1000;
@@ -109,8 +164,7 @@ addSpecial('2', function() {
 				scope.boss.y = 390;
 				x = 4595;
 				y = 450;
-			}
-				, {
+			}, {
 				fadeoutEnd: false,
 				skippable: true
 			})

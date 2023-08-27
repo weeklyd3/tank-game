@@ -228,7 +228,7 @@ function updateGame() {
                 draw.rect(value[i][0] - x+width/2, value[i][1] -y+height/2, value[i][2], value[i][3])
                 draw.pop();
             }
-			if (key == "circle" || key == "circ") {
+			if (key == "circle") {
                 draw.push();
 				draw.fill(value[i][value[i].length - 1]);
 				draw.circle(value[i][0]- x+width/2, value[i][1]-y+height/2, value[i][2] * 2);
