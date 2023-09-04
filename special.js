@@ -1,13 +1,50 @@
 var radarCanvas;
+var radarCanvasScale = 0.05;
+var ogradarcanvasscale = 0.05;
 addEventListener('TankGame.updateDone', async () => {
 	if (!experiments.radar) return;
 	if (!radarCanvas) radarCanvas = draw.createGraphics(200, 200);
+	if (draw.keyIsDown(61)) {
+		radarCanvasScale /= 0.9;
+		if (radarCanvasScale > 0.1) radarCanvasScale = 0.1;
+	}
+	if (draw.keyIsDown(173)) {
+		radarCanvasScale *= 0.9;
+		if (radarCanvasScale < 0.01) radarCanvasScale = 0.01;
+	}
+	if (draw.keyIsDown(48)) radarCanvasScale = ogradarcanvasscale;
+	var scale = radarCanvasScale;
+	var ratio = ogradarcanvasscale / radarCanvasScale;
 	radarCanvas.push();
 	radarCanvas.fill('lightgray');
 	radarCanvas.rect(0, 0, 200, 200);
-
 	var playerAngle = angleBetweenTwoPoints(width / 2, height / 2, draw.mouseX, draw.mouseY);
 	radarCanvas.push();
+	if (levelInfo.background && levelInfo.background.beforeAesthetics) radarCanvas.image(levelInfo.background.image, -x * scale + 100, -y * scale + 100, levelInfo.background.image.width * scale, levelInfo.background.image.height * scale);
+	setOpacity(radarCanvas, 0.7);
+	radarCanvas.push();
+	var mindist = Infinity;
+	var mindiste = null;
+	for (const type in levelInfo.enemies) {
+		if (type === 'debug') continue;
+		for (const e of levelInfo.enemies[type]) {
+			var theircenter = [e.x + e.sizeX / 2, e.y + e.sizeY / 2];
+			var yourcenter = [x, y];
+			var dist = Math.sqrt((theircenter[0] - yourcenter[0]) ** 2 + (theircenter[1] - yourcenter[1]) ** 2);
+			if (dist < mindist) { 
+				mindiste = e;
+				mindist = dist;
+			}
+		}
+	}
+	if (mindiste) {
+		var center = [mindiste.x + mindiste.sizeX / 2, mindiste.y + mindiste.sizeY / 2];
+		radarCanvas.strokeWeight(5);
+		radarCanvas.stroke('lime');
+		radarCanvas.line((center[0] - x) * scale + 100, (center[1] - y) * scale + 100, 100, 100);
+	}
+	setOpacity(radarCanvas, 1);
+	radarCanvas.pop();
 	radarCanvas.translate(100, 100);
 	radarCanvas.angleMode('degrees');
 	radarCanvas.rotate(playerAngle);
@@ -19,15 +56,14 @@ addEventListener('TankGame.updateDone', async () => {
 	radarCanvas.fill(draw.color(0, 0, 0, 0));
 	radarCanvas.strokeWeight(2);
 	radarCanvas.stroke('black');
-	var scale = 0.05;
-	radarCanvas.rect(-x * scale + 100, -y * scale + 100, levelInfo.length * scale, 900 * scale);
+	radarCanvas.rect(-x * scale + 100, -y * scale + 100, levelInfo.length * scale, (levelInfo.height ?? 900) * scale);
 	radarCanvas.strokeWeight(0);
 	for (const type in levelInfo.enemies) {
 		if (type == 'debug') continue;
 		for (const e of levelInfo.enemies[type]) {
 			radarCanvas.fill('gray');
 			var [cx, cy] = [e.x + e.sizeX / 2, e.y + e.sizeY / 2];
-			radarCanvas.circle((cx - x) * scale + 100, (cy - y) * scale + 100, 10);
+			radarCanvas.circle((cx - x) * scale + 100, (cy - y) * scale + 100, 10 / ratio);
 		}
 	}
 	for (const type in levelInfo.aesthetics) {
@@ -49,6 +85,7 @@ addEventListener('TankGame.updateDone', async () => {
 			}
 		}
 	}
+	if (levelInfo.background && !levelInfo.background.beforeAesthetics) radarCanvas.image(levelInfo.background.image, -x * scale + 100, -y * scale + 100, levelInfo.background.image.width * scale, levelInfo.background.image.height * scale);
 	radarCanvas.pop();
 	draw.image(radarCanvas, 0, 0, 200, 200);
 });
@@ -115,7 +152,65 @@ addSpecial('-2', function() {
 	}
 	window.sinceLastExpansion++;
 })
-addSpecial('4', function() {
+addSpecial('3', function() {
+	if (!window.enemiesToDefeat) {
+		console.log('generating enemies to defeat');
+		enemiesToDefeat = [];
+		for (const num of [0, 1, 2, 3]) {
+			enemiesToDefeat.push(levelInfo.getEnemyById(`wall${num}`));
+		}
+	}
+	if (enemiesToDefeat.every((e) => e.health <= 0) && !window.allDefeatedBefore) {
+		window.allDefeatedBefore = true;
+		cutsceneAPI.cutscene([async (scope, skip) => {
+			// target x: 2500, 400
+			var upf = 1;
+			addEventListener('TankGame.update', function cb() {
+				x += 10 * upf;
+				y += 3 * upf;
+				if (x >= 2500 || y >= 400) {
+					x = 2500;
+					y = 400;
+					removeEventListener('TankGame.update', cb);
+				}
+			});
+			await cutsceneAPI.wait((800 / 10 / upf) / 30 * 1000, skip);
+			addEventListener('TankGame.update', function cb() {
+				x += 10;
+				if (x >= 2750) {
+					x = 2750;
+					removeEventListener('TankGame.update', cb);
+				}
+			})
+			await cutsceneAPI.wait(250 / 10 / 30 * 1000, skip);
+			await cutsceneAPI.wait(500, skip);
+			var toplava = levelInfo.aesthetics.lava[0];
+			var bottomlava = levelInfo.aesthetics.lava[1];
+			var heightdiff = 2;
+			addEventListener('TankGame.update', function cb() {
+				toplava[3] -= heightdiff;
+				bottomlava[3] -= heightdiff;
+				bottomlava[1] += heightdiff;
+				if (toplava[3] <= 250) removeEventListener('TankGame.update', cb);
+			});
+			await cutsceneAPI.wait(200 / heightdiff / 30 * 1000, skip);
+			await cutsceneAPI.wait(500, skip);
+		}], async function() {
+			x = 1700;
+			y = 160;
+		}, function() {
+			x = 2750;
+			y = 400;
+			levelInfo.aesthetics.lava[0][3] = 250;
+			levelInfo.aesthetics.lava[1][1] = 650;
+			levelInfo.aesthetics.lava[1][3] = 250;
+		}, {
+			skippable: true,
+			fadeoutEnd: false
+		});
+	}
+})
+addSpecial('5', function() {
 	if (window.allDead == undefined) allDead = false;
 	if (window.twoSpawned == undefined) twoSpawned = false;
 	if (window.bossStart == undefined) bossStart = false;

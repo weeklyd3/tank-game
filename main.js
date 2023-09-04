@@ -16,7 +16,10 @@ var tips = [
     "Win a level to unlock the next one",
     "Use coins to buy upgrades from the shop",
 	"Send feedback by pressing F after the level",
-    "Barriers are very sticky and lava is very hot"
+    "Barriers are very sticky and lava is very hot",
+    "The bar on the bottom right shows the damage you dealt to all enemies",
+    "Press E to enable autofire",
+	"Hold SHIFT to accelerate on open highways"
 ];
 var gameStarted = false;
 var width = 2000;
@@ -26,6 +29,8 @@ var fps = 30;
 if (new URL(location.href).searchParams.get('fps')) fps = new URL(location.href).searchParams.get('fps');
 var physicsSpeed = 1;
 var player;
+var autofire = false;
+var prevaf = false;
 var gun1, gun2, gun3, gunX;
 var loadStage, weapons;
 var recoil = [0, 0];
@@ -61,7 +66,7 @@ function addCallback(event, cb) {
 	if (event.startsWith('TankGame.')) {
 		console.log(`It is unnecessary to specify TankGame. at the start of callback events. Removing it.`);
 		event = event.slice(9);
-	}
+	}	
 	if (callbacks[event] == null) {
 		callbacks[event] = [];
 		console.warn(`Event ${event} doesn't exist yet. It was created.`);
@@ -107,14 +112,18 @@ function getAestheticById(id) {
 	return null;
 }
 function initEnemy(type, en, add = true) {
+	en._type = type;
 	if (!en.__lookupSetter__('type')) {
+		en.__defineGetter__('type', () => en._type);
 		en.__defineSetter__('type', (newType) => {
+			if (newType == en._type) return;
 			levelInfo.enemies[type].splice(levelInfo.enemies[type].indexOf(en), 1);
 			if (!levelInfo.enemies[newType]) levelInfo.enemies[newType] = [];
 			levelInfo.enemies[newType].push(en);
+			Object.assign(en, {type: newType});
+			return newType;
 		});
 	}
-	en.type = type;
 	if (!add) return;
 	if (!levelInfo.enemies[type]) levelInfo.enemies[type] = [];
 	levelInfo.enemies[type].push(en);
@@ -185,6 +194,8 @@ var frozen = false; // new: keeps updating, but stops physics
 var prevPause = false;
 var mouseX, mouseY;
 var spd = 5;
+var ogspd = spd;
+var maxspd = 30;
 var selected = 1;
 var firing = false;
 var gunSize;
@@ -210,6 +221,7 @@ var dead = false;
 var stageDone = false;
 var immortal = false;
 var firstDone = false;
+var aimTowards = [0, 0];
 
 customStatus = null;
 customStatusLength = null;
@@ -217,6 +229,8 @@ customStatusOriginal = null;
 function updateGame() {
     if (immortal) hp = Infinity;
 	if (paused) return;
+	aimTowards[0] = draw.mouseX;
+	aimTowards[1] = draw.mouseY;
 	multiplier = physicsSpeed * ogfps / fps;
 	triggerEvent('update');
 	gunSize = weapons[guns[selected - 1]].size[weapons[guns[selected - 1]].size.length - 1] + 10;
@@ -295,6 +309,10 @@ function updateGame() {
 				draw.fill(draw.color(255, value[i].frames / 50 * 160, 0));
 				draw.rect(value[i][0] - x+width/2, value[i][1] -y+height/2, value[i][2], value[i][3]);
 				value[i].bubbles = value[i].bubbles.filter((b) => {
+					if (value[i][4]) {
+						b.x += value[i][4][0];
+						b.y += value[i][4][1];
+					}
 					setOpacity(draw, b.opacity / 100);
 					draw.fill(draw.color(0, 0, 0, 0));
 					draw.stroke('white');
@@ -321,7 +339,7 @@ function updateGame() {
 	var opac = 0.5 + (0.5 * (maxBubbleFrames - bubbleFrames) / maxBubbleFrames);
 	var gunopac = 0 + (1 * (maxBubbleFrames - bubbleFrames) / maxBubbleFrames);
 	setOpacity(draw, gunopac);
-	if (bubbleFrames < maxBubbleFrames) draw.line(width / 2, height / 2, width / 2 + movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, 70)[0], height / 2 + movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, 70)[1]);
+	if (bubbleFrames < maxBubbleFrames) draw.line(width / 2, height / 2, width / 2 + movePointTowardsAnotherPoint(width / 2, height / 2, ...aimTowards, 70)[0], height / 2 + movePointTowardsAnotherPoint(width / 2, height / 2, ...aimTowards, 70)[1]);
 	setOpacity(draw, 1);
 	for (var i = 0; i < bullets.length; i++) {
 		draw.fill("blue");
@@ -354,7 +372,12 @@ function updateGame() {
 		draw.strokeWeight(10);
 		setOpacity(draw, 1);
 		if (cooldowns[selected] > -fadeoutTime) {
-			cooldowns[selected] -= 1000 / fps * multiplier;
+			cooldowns[selected] -= (1000 / ogfps) * multiplier * Math.pow(equippedGuns[guns[selected - 1]][2], 1/5.5);
+            // wats multiplier
+            // wheres it defined
+			// basically how fast the physics should go
+			// like if physicsSpeed = 2
+			// multiplier = 2
 			draw.angleMode(draw.DEGREES);
 			var percentDone = (weapons[guns[selected - 1]].cooldown - cooldowns[selected]) * 100 / weapons[guns[selected - 1]].cooldown;
 			var done = percentDone / 100;
@@ -417,10 +440,10 @@ function updateGame() {
 				if (value[i].treadFrame == 0) value[i].frame = !value[i].frame
                 var img = images['other'][`treads${value[i].frame + 1}`];
 				if (img) draw.image(img, ...coords);
-                draw.image(images.enemies[key].body, value[i].x-x+width/2, value[i].y-y+height/2, value[i].sizeX, value[i].sizeY);
+                draw.image(value[i].image ?? images.enemies[key].body, value[i].x-x+width/2, value[i].y-y+height/2, value[i].sizeX, value[i].sizeY);
                 draw.pop();
 			}
-            else draw.image(images.enemies[key].body, value[i].x-x+width/2, value[i].y-y+height/2, value[i].sizeX, value[i].sizeY);
+            else draw.image(value[i].image ?? images.enemies[key].body, value[i].x-x+width/2, value[i].y-y+height/2, value[i].sizeX, value[i].sizeY);
 			draw.push();
 			draw.translate(-x+width/2 + value[i].x + value[i].sizeX / 2, -y+height / 2 + value[i].y + value[i].sizeY / 2);
 			var cannon = images.enemies[key].cannon;
@@ -472,11 +495,11 @@ function updateGame() {
 					value[i].health = 0;
 					hp -= enemyhp;
 				}
-				if (enemyhp === hp) {
+				else if (enemyhp === hp) {
 					hp = 0;
 					value[i].health = 0;
 				}
-				if (enemyhp > hp) {
+				else if (enemyhp > hp) {
 					hp = 0;
 					value[i].health -= hp;
 					if (value[i].health < 0) value[i].health = 0;
@@ -581,26 +604,34 @@ function updateGame() {
     }
 	medpacks = newmedpacks;
 	draw.strokeWeight(3);
+	var levelheight = levelInfo.height ?? height;
 	draw.line(width / 2 - x, height / 2 - y, levelInfo.length - x + width / 2, height / 2 - y);
-	draw.line(width / 2 - x, height / 2 - y, width / 2 - x, 3 * height / 2 - y);
-	draw.line(width / 2 - x, 3 * height / 2 - y, levelInfo.length - x + width / 2, 3 * height / 2 - y);
-	draw.line(levelInfo.length - x + width / 2, height / 2 - y, levelInfo.length - x + width / 2, 3 * height / 2 - y);
+	draw.line(width / 2 - x, height / 2 - y, width / 2 - x, height / 2 - y + levelheight);
+	draw.line(width / 2 - x, height / 2 - y + levelheight, levelInfo.length - x + width / 2, levelheight + height / 2 - y);
+	draw.line(levelInfo.length - x + width / 2, height / 2 - y, levelInfo.length - x + width / 2, levelheight + height / 2 - y);
 	draw.fill('black');
 	for (var i = 0; i < levelInfo.length; i += 100) {
 		draw.text(i, i - x + width / 2, -y+height/2);
-		draw.text(i, i - x + width / 2, -y+height/2 + height);
+		draw.text(i, i - x + width / 2, -y+height/2 + levelheight);
 	}
 	// draw everything up here
 	if (paused) return;
 	var inlava = false;
+	var lavamove = [0, 0];
 	if (levelInfo.aesthetics['lava']) {
 		for (const a of levelInfo.aesthetics.lava) {
 			if (colliding({x: x, y: y, r: 30}, {x: a[0], y: a[1], w: a[2], h: a[3]})) {
+				if (a[4] && colliding({x: x, y: y, r: 5}, {x: a[0], y: a[1], w: a[2], h: a[3]})) {
+					lavamove[0] += a[4][0];
+					lavamove[1] += a[4][1];
+				}
 				inlava = true;
 				hp -= 2;
 			}
 		}
 	}
+	x += lavamove[0];
+	y += lavamove[1];
 	var lavaMultiplier = 1;
 	if (inlava) lavaMultiplier = 0.5;
 	var oldx = x, oldy = y;
@@ -761,33 +792,37 @@ function updateGame() {
 		if (draw.keyIsDown(51) && guns[2]) { selected = 3; cooldowns[selected] = -1000; }
 		if (y < 35) y = 35;
 		if (x < 35) x = 35;
-		if (y > 865) y = 865;
+		if (y > (levelInfo.height ?? height) - 35) y = (levelInfo.height ?? height) - 35;
 		if (x > levelInfo.length - 35) x = levelInfo.length - 35;
 	}
+        if (draw.keyIsDown(69) /*YEAH THATS THE NUMBER*/){
+            if (!prevaf){
+            prevaf = true;
+            autofire = !autofire;
+        }}
+        else prevaf = false;
+    // dont worry about the above formatting
 	mouseX = draw.mouseX;
 	mouseY = draw.mouseY;
-	if ((firing || (experiments.mousemode && draw.keyIsDown(32))) && (cooldowns[selected] <= 0) && hp > 0 && !frozen) {
+	var gun = guns[selected - 1];
+	if ((firing || autofire || (experiments.mousemode && draw.keyIsDown(32))) && (cooldowns[selected] <= 0) && hp > 0 && !frozen) {
         if (equippedGuns[guns[selected-1]][3] > 0){
             equippedGuns[guns[selected-1]][3] --;
-    		var rec = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, -weapons[guns[selected - 1]]["recoil"]);
+    		var rec = movePointTowardsAnotherPoint(width / 2, height / 2, ...aimTowards, -weapons[guns[selected - 1]]["recoil"]);
     		cooldowns[selected] = weapons[guns[selected - 1]].cooldown;
     		recoil[0] += rec[0];
     		recoil[1] += rec[1];
-			var gun = guns[selected - 1];
 			for (var i = 0; i < (weapons[guns[selected - 1]].shots ?? 1); i++) {
 	    		if (guns[selected - 1] == "basic" || guns[selected - 1] == "destroyer") {
-					console.log('firing');
-	    			var tempSpeed = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, weapons[gun].speed[0]);
+	    			var tempSpeed = movePointTowardsAnotherPoint(width / 2, height / 2, ...aimTowards, weapons[gun].speed[0] * Math.sqrt(Math.sqrt(equippedGuns[gun][0])));
 	                var bulletSpeed = rotatePoint(width/2+tempSpeed[0], height/2+tempSpeed[1], width/2, height/2, randint(-weapons[guns[selected-1]].spread, weapons[guns[selected-1]].spread)); // placeholder
-	    			var bulletSpawn = movePointTowardsAnotherPoint(width / 2, height / 2, mouseX, mouseY, Math.abs(70 - i * 5));
+	    			var bulletSpawn = movePointTowardsAnotherPoint(width / 2, height / 2, ...aimTowards, Math.abs(70 - i * 5));
 	    			draw.stroke(0);
-	    			bullets.push({ "x": x + bulletSpawn[0], "y": y + bulletSpawn[1], "r": weapons[gun].size[0], "total": 0, "speed": weapons[gun].speed[0], "xSpeed": bulletSpeed[0], "ySpeed": bulletSpeed[1], "range": weapons[gun].range[0], "dmg": weapons[gun].damage[0] });
+	    			bullets.push({ "x": x + bulletSpawn[0], "y": y + bulletSpawn[1], "r": weapons[gun].size[0], "total": 0, "speed": weapons[gun].speed[0] * Math.sqrt(Math.sqrt(equippedGuns[gun][0])), "xSpeed": bulletSpeed[0], "ySpeed": bulletSpeed[1], "range": weapons[gun].range[0], "dmg": weapons[gun].damage[0] * Math.cbrt(equippedGuns[gun][1]) });
 	    		}
-				if (guns[selected - 1] == "") {
-					
-				}
-	            localStorage.weapons = JSON.stringify(equippedGuns);
+                
 	        }
+	        localStorage.weapons = JSON.stringify(equippedGuns);
 		}
 	}
     newMissiles = [];
@@ -887,9 +922,14 @@ function updateGame() {
 					'h': enemy.sizeY
 				})) {
 					levelInfo.enemies[k][index].damagedThisFrame = true;
-					collided = bullets[i].dmg <= levelInfo.enemies[k][index].health;
-					if (!collided) bullets[i].dmg -= levelInfo.enemies[k][index].health;
-					levelInfo.enemies[k][index].health -= bullets[i].dmg;
+					if (bullets[i].dmg >= levelInfo.enemies[k][index].health){
+                        bullets[i].dmg -= levelInfo.enemies[k][index].health;
+                        levelInfo.enemies[k][index].health = 0;
+                    }
+                    else {
+                        levelInfo.enemies[k][index].health -= bullets[i].dmg;
+                        bullets[i].dmg = 0;
+                    }
 					if (levelInfo.enemies[k][index].health < 0) levelInfo.enemies[k][index].health = 0;
 				}
 			})
@@ -1051,6 +1091,23 @@ function update() {
 	draw.textSize(50);
     draw.textAlign(draw.CENTER, draw.CENTER);
 	draw.textSize(25);
+	var onhighway = false;
+	if (levelInfo.aesthetics.highway) {
+		for (const f of levelInfo.aesthetics.highway) {
+			if (colliding({x: x, y: y, r: 35}, {x: f[0], y: f[1], w: f[2], h: f[3]})) {
+				onhighway = true;
+				break;
+			}
+		}
+	}
+	if (!onhighway) spd = ogspd;
+	else {
+		draw.text(`[${(100 * (spd - ogspd) / (maxspd - ogspd)).toFixed(1)}%] SHIFT = accelerate`, 750, 800, 500);
+		if (draw.keyIsDown(16)) spd += 0.4;
+		else spd -= 0.1;
+		if (spd < ogspd) spd = ogspd;
+		if (spd > maxspd) spd = maxspd;
+	}
     if (equippedGuns[guns[selected-1]][3] > 1000000000 && !experiments.ammoloss){
 	    draw.text(`Ammo: infinity`, 750, 870, 500);
     }
@@ -1138,6 +1195,59 @@ var s = function(sketch) {
 				started = Date.now();
 				gameStarted = true;
 				if (tassing) {
+					var toolbar = document.createElement('div');
+					toolbar.addEventListener('mousedown', (ev) => ev.stopPropagation());
+					toolbar.addEventListener('mouseup', (ev) => ev.stopPropagation());
+					toolbar.style.position = 'absolute';
+					toolbar.style.top = 0;
+					toolbar.style.left = 0;
+					document.body.appendChild(toolbar);
+					toolbar.textContent = 'Speedrun tools: ';
+					var fadvance = document.createElement('button');
+					fadvance.onclick = function() {
+						if (fakemouse) {
+							draw.mouseX = fakemouse[0];
+							draw.mouseY = fakemouse[1];
+						}
+						update();
+					};
+					fadvance.textContent = "frame advance";
+					var mouse = document.createElement('button');
+					mouse.textContent = "mousedown";
+					mouse.onclick = function() {
+						if (this.textContent == 'mousedown') {
+							this.textContent = 'mouseup';
+							dispatchEvent(new Event('mousedown'));
+							return;
+						}
+						this.textContent = 'mousedown';
+						dispatchEvent(new Event('mouseup'));
+					}
+					var pointer = document.createElement('button');
+					pointer.textContent = "Emulate mouse position";
+					var fakemouse = false;
+					var fakemousepos = null;
+					pointer.onclick = function() {
+						if (fakemouse) {
+							fakemouse = false;
+							this.textContent = "Emulate mouse position";
+							return;
+						}
+						fakemouse = true;
+						this.textContent = "Stop emulating mouse position";
+						if (!fakemousepos) fakemousebutton.click();
+					}
+					var fakemousebutton = document.createElement('button');
+					fakemousebutton.textContent = "Set mouse position";
+					fakemousebutton.onclick = () => {
+						var c1 = prompt("Input x coordinate:");
+						var c2 = prompt("Input y coordinate:");
+						fakemousepos = [c1, c2];
+					}
+					toolbar.appendChild(fadvance);
+					toolbar.appendChild(mouse);
+					// toolbar.appendChild(pointer);
+					// toolbar.appendChild(fakemousebutton);
 					addEventListener('TankGame.updateDone', function removeUpdateInterval() {
 						clearInterval(updateInterval);
 						removeEventListener('TankGame.updateDone', removeUpdateInterval);
@@ -1174,7 +1284,11 @@ var s = function(sketch) {
 		levelInfo.__defineGetter__('allEnemies', () => {
 			const a = [];
 			for (const k in levelInfo.enemies) {
-				if (k !== 'debug') a.push(...levelInfo.enemies[k]);
+				if (k === 'debug') continue;
+				for (const e of levelInfo.enemies[k]) {
+					if (!e.type) e.type = k;
+				}
+				a.push(...levelInfo.enemies[k]);
 			}
 			return a;
 		})

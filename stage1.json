@@ -257,6 +257,15 @@
 			"machine": []
 		}
 	},
+	"level-3": {
+		"length": 900,
+		"aesthetics": [],
+		"enemies": {
+			"wall": [
+				{"x": 350, "y": 350, "motile": false, "sizeX":200, "sizeY": 200, "frames": 0, "killable": true, "speed": 10, "health": 500, "originalHealth": 500}
+			]
+		}
+	},
 	"level2": {
 		"length": 2000,
         "aesthetics":{
@@ -273,12 +282,23 @@
         }
 	},
 	"level3": {
-		"length": 5000,
+		"length": 7450,
 		"background": {
 			"beforeAesthetics": true
 		},
 		"aesthetics": {
+			"highway": [
+				[4000, 500, 3050, 190]
+			],
+			"text": [
+				[4500, 800, "Use SHIFT to speed down highways!", "black", 50]
+			],
     "lava": [
+		[
+			2800, 0, 900, 450, [0, 5]
+		],
+		[2800, 450, 900, 450, [0, 5]],
+		[3700, 700, 150, 200],
         [
             0,
             0,
@@ -336,11 +356,17 @@
     ]
 },
 		"enemies": {
-			"wall": [{"x": 400, "y": 390, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}],
-			"basic": [{"x": 750, "y": 230, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}]
+			"wall": [{"x": 400, "y": 390, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10},
+				{"x": 2700, "y": 250, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3, "id": "wall0"},
+				{"x": 2700, "y": 350, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3, "id": "wall1"},
+				{"x": 2700, "y": 450, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3, "id": "wall2"},
+				{"x": 2700, "y": 550, "motile": false, "sizeX": 100, "sizeY": 120, "frames": 0, "killable": true, "speed": 0, "lim": [0, 780], "speed": 3, "id": "wall3"}
+			],
+			"basic": [{"x": 750, "y": 230, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 10}],
+			"basic2": [{"x": 7125, "y": 360, "motile": false, "sizeX":150, "sizeY": 180, "frames": 0, "killable": true, "speed": 10, "id": "boss", "health": 300, "originalHealth": 300}]
 		}
 	},
-	"level4": {
+	"level5": {
 		"length": 5500,
 		"aesthetics": {
 			"text": [
