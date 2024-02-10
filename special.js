@@ -1,6 +1,7 @@
 var radarCanvas;
 var radarCanvasScale = 0.05;
 var ogradarcanvasscale = 0.05;
+var showGreenLine = false;
 addEventListener('TankGame.updateDone', async () => {
 	if (!experiments.radar) return;
 	if (!radarCanvas) radarCanvas = draw.createGraphics(200, 200);
@@ -36,12 +37,6 @@ addEventListener('TankGame.updateDone', async () => {
 				mindist = dist;
 			}
 		}
-	}
-	if (mindiste) {
-		var center = [mindiste.x + mindiste.sizeX / 2, mindiste.y + mindiste.sizeY / 2];
-		radarCanvas.strokeWeight(5);
-		radarCanvas.stroke('lime');
-		radarCanvas.line((center[0] - x) * scale + 100, (center[1] - y) * scale + 100, 100, 100);
 	}
 	setOpacity(radarCanvas, 1);
 	radarCanvas.pop();
@@ -86,6 +81,14 @@ addEventListener('TankGame.updateDone', async () => {
 		}
 	}
 	if (levelInfo.background && !levelInfo.background.beforeAesthetics) radarCanvas.image(levelInfo.background.image, -x * scale + 100, -y * scale + 100, levelInfo.background.image.width * scale, levelInfo.background.image.height * scale);
+	radarCanvas.pop();
+	radarCanvas.push();
+	if (mindiste && showGreenLine) {
+		var center = [mindiste.x + mindiste.sizeX / 2, mindiste.y + mindiste.sizeY / 2];
+		radarCanvas.strokeWeight(5);
+		radarCanvas.stroke('lime');
+		radarCanvas.line((center[0] - x) * scale + 100, (center[1] - y) * scale + 100, 100, 100);
+	}
 	radarCanvas.pop();
 	draw.image(radarCanvas, 0, 0, 200, 200);
 });
@@ -289,5 +292,58 @@ addSpecial('5', function() {
 		}, () => 1, {
 			fadeoutEnd: false
 		});
+	}
+})
+addSpecial('-5', function() {
+	experiments.radar = true;
+	showGreenLine = true;
+	if (window.noWin == undefined) noWin = true;
+	if (window.speedMul == undefined) speedMul = 10;
+	if (window.elev == undefined) elev = 500;
+	if (window.prevX !== undefined && window.prevY != undefined) {
+		x += (x - prevX) * (speedMul - 1);
+		y += (y - prevY) * (speedMul - 1);
+	}
+	prevX = x;
+	prevY = y;
+	if (draw.keyIsDown(16)) {
+		speedMul = 0.95 * speedMul;
+		if (speedMul < 3 && !colliding({x: x, y: y, r: 35}, {x: ae[0], y: ae[1], w: ae[2], h: ae[3]})) speedMul = 3;
+	}
+	var ae = levelInfo.getAestheticById('landing');
+	if (draw.keyIsDown(49) && !colliding({x: x, y: y, r: 35}, {x: ae[0], y: ae[1], w: ae[2], h: ae[3]})) {
+		elev -= 10;
+		if (elev <= -50 && !colliding({x: x, y: y, r: 35}, {x: ae[0], y: ae[1], w: ae[2], h: ae[3]})) hp = 0;
+	}
+	if (draw.keyIsDown(50)) {
+		elev += 10;
+		if (elev >= 1000) elev = 1000;
+	}
+	if (colliding({x: x, y: y, r: 35}, {x: ae[0], y: ae[1], w: ae[2], h: ae[3]}) && elev < 20) {
+		spd = 0;
+		x += speedMul * 5;
+		speedMul *= 0.5;
+		if (speedMul <= 0.1) {
+			speedMul = 0;
+			if (!window.winFrames) winFrames = 0;
+			winFrames++;
+			if (winFrames == 30) {
+				levelInfo.enemies['wall'][0]['health'] = 0;
+				noWin = false;
+			}
+		}
+	}
+	if (!window.added) {
+		added = true;
+		addEventListener('TankGame.updateDone', () => {
+			draw.push();
+			draw.textAlign(draw.CENTER, draw.BOTTOM);
+			if (elev < 0) draw.fill('red');
+			var ae = levelInfo.getAestheticById('landing');
+			var center = [ae[0] + ae[2] / 2, ae[1] + ae[3] / 2];
+			var dist = Math.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2);
+			draw.text(`elev: ${elev} ft\nspd: ${spd * speedMul}\ndist from landing: ${dist}`, width / 2, height / 2 - 35);
+			draw.pop();
+		})
 	}
 })

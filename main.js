@@ -104,9 +104,13 @@ function getEnemyById(id, ...types) {
 	return null;
 }
 function getAestheticById(id) {
+	console.log(JSON.stringify(levelInfo.aesthetics, null, 4));
 	for (const k in levelInfo.aesthetics) {
 		for (const a of levelInfo.aesthetics[k]) {
-			if (a.id === id) return a;
+			if (a.id == id) {
+				console.log(a);
+				return a;
+			}
 		}
 	}
 	return null;
@@ -283,6 +287,7 @@ function updateGame() {
 				draw.rect(value[i][0] - x+width/2, value[i][1] -y+height/2, value[i][2], value[i][3]);
 				setOpacity(draw, 1);
 			}
+			if (key == 'water') {}
 			if (key == 'lava') {
 				if (value[i].frames == undefined) {
 					value[i].frames = 0;
@@ -1259,6 +1264,8 @@ var s = function(sketch) {
 		};
 		loadStage = await getJSONResource("stage" + stage + ".json");
 		levelInfo = loadStage['level' + level];
+		if (levelInfo.initX != undefined) x = levelInfo.initX;
+		if (levelInfo.initY != undefined) y = levelInfo.initY;
 		if (levelInfo.background) {
 			levelInfo.background.image = draw.loadImage(`images/backgrounds/${levelInfo.background.filename ?? `bg_level${level}`}.svg`);
 		}

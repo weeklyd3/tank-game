@@ -266,6 +266,54 @@
 			]
 		}
 	},
+	"level-4": {
+		"length": 5000,
+		"aesthetics": {
+			"highway": [
+				[0, 300, 5000, 300]
+			],
+			"rect": [[0, 300, 5000, 300, "#bbbbbb"]],
+			"lava": [
+				[1500, 300, 1000, 300, [-7, 0]]
+			],
+			"rapids": [
+				[1500, 0, 1000, 300, [-7, 0]]
+			],
+			"barrier": [
+				[500, 250, 200, 350, 0.5, "gray"],
+				[2400, 250, 200, 400, 1, "green"]
+			]
+		},
+		"enemies": {
+			"wall": [
+				{"x": 350, "y": 350, "motile": false, "sizeX":100, "sizeY": 100, "frames": 0, "killable": true, "speed": 10},
+				{"x": 150, "y": 350, "motile": false, "sizeX":100, "sizeY": 100, "frames": 0, "killable": true, "speed": 10}
+			]
+		}
+	},
+	"level-5": {
+		"length": 40000,
+		"height": 40000,
+		"initX": 0,
+		"initY": 0,
+		"aesthetics": {
+			"rect": [
+				[0, 0, 40000, 40000, "skyblue"],
+				{"0": 18900, "1": 19800, "2": 1750, "3": 120, "4": "gray", "id": "landing"}
+			],
+			"barrier": [
+				[19650, 19750, 150, 50, 1, "black"]
+			],
+			"text": [
+				[35, 35, "Use SHIFT to reduce your speed and 1 and 2 to control your elevation.\nYou need to be at 0 ft to land.", 20, "black"]
+			]
+		},
+		"enemies": {
+			"wall": [
+				{"x": 19650, "y": 19800, "motile": false, "sizeX":100, "sizeY": 120, "frames": 0, "killable": true, "speed": 5, "lim": [0, 800], "health": 100000, "originalHealth": 100000, "money": [0, 0]}
+			]
+		}
+	},
 	"level2": {
 		"length": 2000,
         "aesthetics":{

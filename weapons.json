@@ -17,7 +17,7 @@
         "recoil": 3,
         "image": "images/other/pistol.svg"
     },
-    "basic": {
+    "basic2": {
         "cooldown": 1000,
         "damage": [50],
         "size": [25],
